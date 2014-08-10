@@ -4,7 +4,7 @@
   "description": "Destoroyah karma test runner",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp; karma start --single-run"
   },
   "keywords": [
     "karma",
@@ -23,7 +23,7 @@
     "karma": "^0.12.21",
     "karma-coffee-preprocessor": "^0.2.1",
     "karma-mocha-reporter": "^0.2.8",
-    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-phantomjs-launcher": "^0.1.4"
   },
   "repository": {
     "type": "git",
