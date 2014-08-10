@@ -12,7 +12,7 @@ awake 'Hopes', ->
   rampage 'on is truethy', hoping.isTruethy(), (setOfTruethy) -> setOfTruethy
   rampage 'on is not truethy', hoping.not.isTruethy(), (setOfNotTruethy) -> setOfNotTruethy
   rampage 'on is equal', hoping.isEqual('foo'), -> 'foo'
-  rampage 'on is not equal', ho
+  rampage 'on is not equal', hoping.not.isEqual('foo'), -> 'bar'
   rampage 'on is defined', hoping.isDefined(), (setOfTruethy) -> setOfTruethy
   rampage 'on is not defined', hoping.not.isDefined(), -> undefined
   rampage 'on is positive', hoping.isPositive(true), (pInt) -> pInt
