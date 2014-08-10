@@ -2,6 +2,7 @@
 // Generated on Wed Aug 06 2014 15:09:52 GMT+0200 (CEST)
 
 module.exports = function(config) {
+  config.plugins.push(__dirname + '/lib/index.js');
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -39,7 +40,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['mocha'],
 
 
     // web server port
