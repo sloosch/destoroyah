@@ -6,6 +6,7 @@ exports.attacks = attackRegistry = {pileOf : {}}
 exports.registerAttack = registerAttack = (attackName, pile, constr) ->
   attackRegistry[attackName] = -> constr.apply null, arguments
   attackRegistry.pileOf[attackName] = -> new PileOfAttack(attackRegistry[attackName].apply null, arguments) if pile
+exports.unregisterAttack = unregisterAttack = (attackName) -> delete attackRegistry[attackName]
 
 exports.Attack = class Attack
   constructor : (@args...) -> @_init.apply @, args
@@ -87,12 +88,14 @@ exports.ObjectAttack = class ObjectAttack extends Attack
   _perform : (dist, example) ->
     obj = {}
     for k, v of example
-      obj[k] =
-        switch typeof v
-          when 'boolean' then attack.bool().execute()
-          when 'number' then attack.decimal().execute(dist)
-          when 'string' then attack.string().execute(dist)
-          when 'object' then attack.object(v).execute(dist)
+      attack = null
+      if typeof v == 'function'
+        attack = v()
+      else
+        throw new Error('Couldn\'t find ' + v + ' attack for key ' + k) unless v of attackRegistry
+        attack = attackRegistry[v]()
+      throw new Error(v + ' for key ' + k ' is not an attack') unless attack instanceof Attack
+      obj[k] = attack.execute dist
     obj
 
 registerAttack 'object', true, (example) -> new ObjectAttack(example)

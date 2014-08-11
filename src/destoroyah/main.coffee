@@ -74,7 +74,7 @@ argFormat = (args) ->
     else
       switch typeof arg
         when 'undefined' then '<undefined>'
-        when 'string' then (if arg.length == 0 then '<empty string>' else arg)
+        when 'string' then (if arg.length == 0 then '<empty string>' else '“' + arg + '”')
         when 'number' then arg
         when 'boolean' then (if arg == true then '<TRUE>' else '<FALSE>')
         when 'object' then JSON.stringify(arg)
@@ -138,6 +138,12 @@ class Destoroyah extends MonsterEventEmitter
     f() for f in @detach
     @detach = []
     @reset()
+  _registerAdditionalAttacks : ->
+    attackModule.registerAttack attackName, true, attackConstr for attackName, attackConstr of @additionalAttack
+    return
+  _unregisterAdditionalAttacks : ->
+    attackModule.unregisterAttack attackName for attackName, attackConstr of @additionalAttack
+    return
   awake : ->
     @reset()
     @setup()
@@ -146,6 +152,7 @@ class Destoroyah extends MonsterEventEmitter
     try
       for rampage in @rampages
         @_fireEvent 'start rampage', rampage
+        @_registerAdditionalAttacks()
         try
           before() for before in @befores
           res = rampage.punch()
@@ -154,6 +161,7 @@ class Destoroyah extends MonsterEventEmitter
         catch error
           @_fireEvent 'error rampage', rampage, error
     finally
+      @_unregisterAdditionalAttacks()
       @_fireEvent 'end'
     return
 
@@ -182,8 +190,7 @@ class Rampage extends MonsterEventEmitter
     attackNames.map (genName) =>
       [attackName] = genName.split '_'
       attackName = attackName.trim()
-      return destoroyah.attack[attackName]() if attackName of destoroyah.attack
-      return @monster.additionalAttack[attackName]() if attackName of @monster?.additionalAttack
+      return attack[attackName]() if attackName of attack
       throw new Error('Attack "' + attackName + '" not found for rampage ' + @reason + ', not equipped?')
   punch : ->
     res = @_attackWith @attacks()

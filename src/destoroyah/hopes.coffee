@@ -2,6 +2,7 @@ exports.hopes = hopeRegistry = {not : (f) -> (v) -> not f v}
 exports.registerHope = registerHope = (hopeName, f) ->
   hopeRegistry[hopeName] = -> f.apply null, arguments
   hopeRegistry.not[hopeName] = -> hopeRegistry.not(f.apply null, arguments)
+exports.unregisterHope = unregisterHope = (hopeName) -> delete hopeRegistry[hopeName]
 
 defaultHopes =
   isTruthy : -> (v) -> typeof v != 'undefined' && v != 0 && v != false && v != null && v == v
