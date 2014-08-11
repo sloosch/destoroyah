@@ -1,4 +1,4 @@
-awake 'Hopes', ->
+awake 'Hope', ->
 
   equipWith 'setOfTruthy', -> attack.anyOf [true, 'foo', {}, []]
   equipWith 'setOfNotTruthy', -> attack.anyOf [undefined, null, NaN, 0]

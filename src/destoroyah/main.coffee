@@ -249,11 +249,13 @@ destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
   combos = destoroyah.combo.apply null, edgeCases
 
   for comboArgs in combos
-    return new DestoroyahResult(true, angryness, combos.length, comboArgs, startTime) unless destoroyah.fulfillsHope func, comboArgs, hope
+    unless destoroyah.fulfillsHope func, comboArgs, hope
+      return new DestoroyahResult(true, angryness, combos.length, comboArgs, startTime)
 
   for [1..angryness]
     args = thisAttacks.map (a) -> a.execute field
-    return new DestoroyahResult(true, angryness, combos.length, args, startTime) unless destoroyah.fulfillsHope func, args, hope
+    unless destoroyah.fulfillsHope func, args, hope
+      return new DestoroyahResult(true, angryness, combos.length, args, startTime)
 
   new DestoroyahResult(false, angryness, combos.length, [], startTime)
 

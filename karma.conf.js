@@ -2,7 +2,7 @@
 // Generated on Wed Aug 06 2014 15:09:52 GMT+0200 (CEST)
 
 module.exports = function(config) {
-  config.plugins.push(__dirname + '/lib/index.js');
+  config.plugins.push(__dirname + '/lib/destoroyah/web/karma/index.js');
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
