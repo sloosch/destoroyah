@@ -67,54 +67,6 @@ class BitterStruggle extends MonsterEventEmitter
 
 destoroyah.bitterStruggle = new BitterStruggle()
 
-argFormat = (args) ->
-  str = []
-  for arg in args
-    str.push if arg == null then '<NULL>'
-    else
-      switch typeof arg
-        when 'undefined' then '<undefined>'
-        when 'string' then (if arg.length == 0 then '<empty string>' else '“' + arg + '”')
-        when 'number' then arg
-        when 'boolean' then (if arg == true then '<TRUE>' else '<FALSE>')
-        when 'object' then JSON.stringify(arg)
-  str.join ', '
-
-destoroyah.argFormat = argFormat
-
-logReporter = -> (bitterStruggle) ->
-  detach = []
-  results = []
-  detach.push bitterStruggle.on 'start', ->
-    console.log 'Fight started'
-  detach.push  bitterStruggle.on 'awake monster', (monster) ->
-    console.log 'The monster awakes: ' + monster.reason
-  detach.push bitterStruggle.on 'calm monster', (monster) ->
-    console.log 'The monster calms down and may walks away'
-  detach.push bitterStruggle.on 'start rampage', (monster, rampage) ->
-    console.log 'Preparing for rampage ' + monster.reason + ' ' + rampage.reason
-  detach.push bitterStruggle.on 'end rampage', (monster, rampage) ->
-    console.log 'Rampage ended ' + monster.reason + ' ' + rampage.reason
-  detach.push bitterStruggle.on 'defended', (monster, rampage, result) ->
-    console.log 'Defended ' + result.angryness + ' attacks and ' + result.combos + ' specials from ' + monster.reason + ' ' + rampage.reason
-    results.push result
-  detach.push bitterStruggle.on 'defeated', (monster, rampage, result) ->
-    console.error 'Defeated by the monster ' + monster.reason + ' ' + rampage.reason + ' : ' + argFormat(result.lastArguments)
-    results.push result
-  detach.push bitterStruggle.on 'error rampage', (monster, rampage, error) ->
-    msg = 'Found a weak spot, fight ended unfair with error ' + error
-    msg += '\nfought with arguments ' + argFormat(error.__destoroyah) if error.__destoroyah?
-    console.error msg
-  detach.push bitterStruggle.on 'end', ->
-    console.log 'Fight ended'
-    f() for f in detach
-    fails = results.reduce ((acc, r) -> if r.failed then acc + 1 else acc), 0
-    attacks = results.reduce ((acc, r) -> acc + r.combos + r.angryness), 0
-    console.log 'Failed to defeat ' + fails + ' rampages, monsters have attacked ' + attacks + ' times'
-
-destoroyah.logReporter = logReporter
-
-
 ###
   Awakening
 ###
