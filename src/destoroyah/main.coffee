@@ -124,8 +124,9 @@ class Destoroyah extends MonsterEventEmitter
     @rampages = []
     @befores = []
     @afters = []
-  constructor : (@reason, @angryness, @setup) ->
+    f() for f in @detach if @detach?
     @detach = []
+  constructor : (@reason, @angryness, @setup) ->
     @reset()
     super()
   addRampage : (rampage) ->
@@ -133,11 +134,7 @@ class Destoroyah extends MonsterEventEmitter
       @detach.push rampage.through 'defended', @
       @detach.push rampage.through 'defeated', @
       @rampages.push rampage
-      rampage.setMonster @
-  surrender : ->
-    f() for f in @detach
-    @detach = []
-    @reset()
+    return
   _registerAdditionalAttacks : ->
     attackModule.registerAttack attackName, true, attackConstr for attackName, attackConstr of @additionalAttack
     return
@@ -155,7 +152,7 @@ class Destoroyah extends MonsterEventEmitter
         @_registerAdditionalAttacks()
         try
           before() for before in @befores
-          res = rampage.punch()
+          res = rampage.punch @angryness
           after() for after in @afters
           @_fireEvent 'end rampage', rampage, res
         catch error
@@ -178,12 +175,8 @@ class Rampage extends MonsterEventEmitter
   @_lastId = 0
   constructor : (@reason, @hope, @f, @field) ->
     @id = Rampage._lastId++
-    @monster = null
     super()
-  setMonster : (monster) ->
-    @monster = monster
-    monster.addRampage @ if @ not in monster.rampages
-  _attackWith: (att) -> destoroyah.forAll @f, att, @hope, @field, @monster.angryness
+  _attackWith: (att, angryness) -> destoroyah.forAll @f, att, @hope, @field, angryness
   attacks : ->
     return [] unless fnParams = @f.toString().match(/function\s*?\((.+)\)/)
     attackNames =fnParams[1].split ','
@@ -192,8 +185,8 @@ class Rampage extends MonsterEventEmitter
       attackName = attackName.trim()
       return attack[attackName]() if attackName of attack
       throw new Error('Attack "' + attackName + '" not found for rampage ' + @reason + ', not equipped?')
-  punch : ->
-    res = @_attackWith @attacks()
+  punch : (angryness) ->
+    res = @_attackWith @attacks(), angryness
     if res.failed
       @_fireEvent 'defeated', res
     else
@@ -205,7 +198,7 @@ destoroyah.rampage = (reason, hope, f) ->
     f = hope
     hope = hoping.isTrue()
   r = new Rampage(reason, hope, f, destoroyah.field.even)
-  r.setMonster destoroyah.bitterStruggle.activeMonster
+  destoroyah.bitterStruggle.activeMonster.addRampage r
   r
 
 ###
