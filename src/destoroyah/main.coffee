@@ -10,7 +10,7 @@ hoping = hopingModule.hopes
 ###
   Globals
 ###
-destoroyah =
+module.exports = destoroyah =
   field : field
   attack : attack
   hoping : hoping
@@ -258,16 +258,3 @@ destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
       return new DestoroyahResult(true, angryness, combos.length, args, startTime)
 
   new DestoroyahResult(false, angryness, combos.length, [], startTime)
-
-if typeof window == 'undefined'
-  module.exports = destoroyah
-else
-  window.destoroyah = destoroyah
-  window.awake = destoroyah.awake
-  window.rampage = destoroyah.rampage
-  window.equipWith = destoroyah.equipWith
-  window.beforeAttack = destoroyah.beforeAttack
-  window.afterAttack = destoroyah.afterAttack
-  window.hoping = destoroyah.hoping
-  window.attack = destoroyah.attack
-  window.field = destoroyah.field

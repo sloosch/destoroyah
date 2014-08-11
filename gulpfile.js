@@ -5,7 +5,7 @@ var rename = require('gulp-rename');
 var paths = {
   scripts : {
     destoroyah : './src/destoroyah/*.coffee',
-    destoroyahWeb : './src/destoroyah/main.coffee',
+    destoroyahWeb : './src/destoroyah/index.coffee',
     karma : './src/karma/*.coffee',
     reporter : './src/reporter/*.coffee',
     runner : './src/runner/*.coffee'
