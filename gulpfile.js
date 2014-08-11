@@ -42,7 +42,7 @@ gulp.task('karma', function() {
 
 gulp.task('runner', function() {
   return gulp.src(paths.scripts.runner)
-  .pipe(coffee())
+  .pipe(coffee({bare : true}))
   .pipe(gulp.dest('./lib/runner'));
 });
 
