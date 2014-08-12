@@ -20,18 +20,21 @@ exports.Attack = class Attack
     @_perform.apply @, args
   _prepare : ->
   _init : ->
+  cases : -> undefined
   edgeCases : -> throw new Error(@ + ' doesn\'t provide any edge cases.')
   _perform : (dist) -> throw new Error('Perform not implemented for attack ' + @)
 
 exports.BoolAttack = class BoolAttack extends Attack
   edgeCases : -> [true, false]
-  _perform : -> field.even() > 0.5
+  cases : -> @edgeCases()
+  _perform : (dist) -> dist() > 0.5
 
 registerAttack 'bool', true, -> new BoolAttack()
 
 exports.SignAttack = class SignAttack extends BoolAttack
   edgeCases : -> [-1, 1]
-  _perform : -> if super() then -1 else 1
+  cases : -> @edgeCases()
+  _perform : (dist) -> if super(dist) then -1 else 1
 
 registerAttack 'sign', true, -> new SignAttack()
 
@@ -51,7 +54,7 @@ exports.DecimalAttack = class DecimalAttack extends PDecimalAttack
   edgeCases : -> [-Math.sqrt(2), 0, Math.sqrt(2)]
   _init : -> @sign = new SignAttack()
   _perform : (dist) ->
-    @sign.execute() * super(dist)
+    @sign.execute(field.even) * super(dist)
 
 registerAttack 'decimal', true, -> new DecimalAttack()
 
@@ -75,14 +78,15 @@ registerAttack 'int', true, -> new IntAttack()
 
 exports.CharAttack = class CharAttack extends Attack
   edgeCases : -> ['', null]
-  _perform : -> constants.CHARSET.charAt (field.even() * constants.CHARSET.length) | 0
+  cases : -> constants.CHARSET.split('')
+  _perform : (dist) -> constants.CHARSET.charAt (dist() * constants.CHARSET.length) | 0
 
 registerAttack 'char', true, -> new CharAttack()
 
 exports.StringAttack = class StringAttack extends CharAttack
   _perform : (dist) ->
     len = (dist() * constants.MAX_STR_LEN) | 0
-    if len > 0 then (super() for [1..len]).join('') else ''
+    if len > 0 then (super(dist) for [1..len]).join('') else ''
 
 registerAttack 'string', true, -> new StringAttack()
 
@@ -104,9 +108,10 @@ exports.ObjectAttack = class ObjectAttack extends Attack
 registerAttack 'object', true, (example) -> new ObjectAttack(example)
 
 exports.AnyOfAttack = class AnyOfAttack extends Attack
-  _init : (arr, @edges=[]) ->
+  _init : (@arr=[], @edges=[]) ->
   edgeCases : -> @edges
-  _perform : (dist, arr) -> arr[(dist() * arr.length) | 0]
+  cases : -> @arr
+  _perform : (dist, arr) -> @arr[(dist() * @arr.length) | 0]
 
 registerAttack 'anyOf', true, (arr, edges) -> new AnyOfAttack(arr, edges)
 

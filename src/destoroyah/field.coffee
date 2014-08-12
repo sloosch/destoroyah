@@ -11,5 +11,4 @@ field =
   lowerEdge : -> Math.min(Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
   upperEdge : -> Math.max(Math.random(), Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
   softEdges : -> if field.even() > 0.5 then field.lowerEdge() else field.upperEdge()
-
 module.exports = field
