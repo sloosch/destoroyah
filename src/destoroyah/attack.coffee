@@ -85,6 +85,7 @@ exports.CharAttack = class CharAttack extends Attack
 registerAttack 'char', true, -> new CharAttack()
 
 exports.StringAttack = class StringAttack extends CharAttack
+  cases : -> undefined
   _perform : (dist) ->
     len = (dist() * constants.MAX_STR_LEN) | 0
     if len > 0 then (super(dist) for [1..len]).join('') else ''
