@@ -14,5 +14,17 @@ defaultHopes =
   isNull : -> (v) -> v == null
   isInRange : (from, to, edge) -> (v) -> v > from && v < to || (edge && (v == from || v == to))
   isOneOf : (arr) -> (v) -> v in arr
+  didHappened : (hope, prediction) ->
+    allResults = []
+    f = (v) ->
+      allResults.push v
+      return
+    f.finally = ->
+      for result in allResults
+        return prediction if hope(result)
+      !prediction
+    f
+  sometimes : (hope) -> defaultHopes.didHappened(hope, yes)
+  never : (hope) -> defaultHopes.didHappened(hope, no)
 
 registerHope hopeName, f for hopeName, f of defaultHopes

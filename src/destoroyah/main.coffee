@@ -166,7 +166,7 @@ destoroyah.afterAttack = (f) -> destoroyah.bitterStruggle.activeMonster.afters.p
 
 destoroyah.fulfillsHope = (func, args, hope) ->
   try
-    hope func.apply(null, args)
+    hope(func.apply(null, args)) != false #returning none booleans is OK
   catch error
     error.__destoroyah = args
     throw error
@@ -192,27 +192,34 @@ class DestoroyahResult
 
 destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
   startTime = new Date().getTime()
-  #consider the edge cases first
-  edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
-  combos = destoroyah.combo edgeCases
-  for comboArgs in combos
-    unless destoroyah.fulfillsHope func, comboArgs, hope
-      return new DestoroyahResult(true, angryness, combos.length, comboArgs, startTime)
+  if thisAttacks.length > 0
+    #consider the edge cases first
+    edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
+    combos = destoroyah.combo edgeCases
+    for comboArgs in combos
+      unless destoroyah.fulfillsHope func, comboArgs, hope
+        return new DestoroyahResult(true, angryness, combos.length, comboArgs, startTime)
 
-  #reduce the amount of test runs when we are able to run all possible cases with the given angryness
-  allCases = thisAttacks.map (e) -> e.cases()
-  complexity = if allCases.length > 0 then allCases.reduce ((acc, e) -> if !e then Infinity else acc * e.length), 1 else 0
-  if complexity <= angryness
-    angryness = complexity
-    caseCombos = destoroyah.combo allCases
-    for caseCombo in caseCombos
-      unless destoroyah.fulfillsHope func, caseCombo, hope
-        return new DestoroyahResult(true, angryness, combos.length, caseCombo, startTime)
+    #reduce the amount of test runs when we are able to run all possible cases with the given angryness
+    allCases = thisAttacks.map (e) -> e.cases()
+    complexity = if allCases.length > 0 then allCases.reduce ((acc, e) -> if !e then Infinity else acc * e.length), 1 else 0
+    if complexity <= angryness
+      angryness = complexity
+      caseCombos = destoroyah.combo allCases
+      for caseCombo in caseCombos
+        unless destoroyah.fulfillsHope func, caseCombo, hope
+          return new DestoroyahResult(true, angryness, combos.length, caseCombo, startTime)
+    else
+      #randomly attack the function
+      for [1..angryness]
+        args = thisAttacks.map (a) -> a.execute field
+        unless destoroyah.fulfillsHope func, args, hope
+          return new DestoroyahResult(true, angryness, combos.length, args, startTime)
   else
-    #randomly attack the function
-    for [1..angryness]
-      args = thisAttacks.map (a) -> a.execute field
-      unless destoroyah.fulfillsHope func, args, hope
-        return new DestoroyahResult(true, angryness, combos.length, args, startTime)
+    angryness = 1
+    combos = []
+    unless destoroyah.fulfillsHope func, [], hope
+      return new DestoroyahResult(true, angryness, 0, [], startTime)
 
-  new DestoroyahResult(false, angryness, combos.length, [], startTime)
+  failed = if 'finally' of hope then hope.finally() == false else false
+  new DestoroyahResult(failed, angryness, combos.length, [], startTime)

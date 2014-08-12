@@ -40,7 +40,8 @@ registerAttack 'sign', true, -> new SignAttack()
 
 class PDecimalAttack extends Attack
   edgeCases : -> [0, Math.sqrt(2)]
-  _perform : (dist) -> dist() * constants.MAX_NUMBER
+  _init : (@max=constants.MAX_NUMBER) ->
+  _perform : (dist) -> dist() * @max
 
 registerAttack 'pDecimal', true, -> new PDecimalAttack()
 

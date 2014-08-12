@@ -23,3 +23,6 @@ awake 'Hope', ->
   rampage 'on is not in range', hoping.not.isInRange(-10, 10), (range20to30) -> range20to30
   rampage 'on is one of', hoping.isOneOf(['foo', 'bar', 'baz']), (setOfFoo) -> setOfFoo
   rampage 'on is not one of', hoping.not.isOneOf(['quux', 'zap', 'higgs']), (setOfFoo) -> setOfFoo
+
+  rampage 'on sometimes true', hoping.sometimes(hoping.isTrue()), (bool) -> bool
+  rampage 'on is never true', hoping.never(hoping.isTrue()), (setOfFoo) -> setOfFoo
