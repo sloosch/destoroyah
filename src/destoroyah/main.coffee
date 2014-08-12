@@ -24,7 +24,7 @@ class MonsterEventEmitter
   constructor : -> @listeners = {}
   _fireEvent : (eventName, args...) -> (f.apply(@, args) for f in @listeners[eventName]) if eventName of @listeners
   on : (eventName, f) ->
-    @listeners[eventName] = [] if eventName not of @listeners
+    @listeners[eventName] = [] unless eventName of @listeners
     @listeners[eventName].push f
     =>
       index = @listeners[eventName].indexOf f
@@ -82,7 +82,7 @@ class Destoroyah extends MonsterEventEmitter
     @reset()
     super()
   addRampage : (rampage) ->
-    if rampage not in @rampages
+    unless rampage in @rampages
       @detach.push rampage.through 'defended', @
       @detach.push rampage.through 'defeated', @
       @rampages.push rampage
@@ -172,19 +172,19 @@ destoroyah.fulfillsHope = (func, args, hope) ->
     throw error
 
 
-destoroyah.combo = (t...) ->
-  q = []
-  return q if t.length == 0
-  q = ([w] for w in t[0])
+destoroyah.combo = (possibilities) ->
+  acc = []
+  return acc if possibilities.length == 0
+  acc = ([w] for w in possibilities[0])
 
-  return q if t.length == 1
-  for d in [1..t.length - 1]
+  return acc if possibilities.length == 1
+  for choices in [1..possibilities.length - 1]
     i = []
-    for r in t[d]
-      for z in q
-        i.push z.concat r
-    q = i
-  q
+    for aCase in possibilities[choices]
+      for z in acc
+        i.push z.concat [aCase]
+    acc = i
+  acc
 
 class DestoroyahResult
   constructor : (@failed, @angryness, @combos, @lastArguments, startTime) ->
@@ -192,13 +192,8 @@ class DestoroyahResult
 
 destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
   startTime = new Date().getTime()
-  combos = []
-  edgeCases = thisAttacks.reduce (acc, a) ->
-    aCase = a.edgeCases().concat a.execute field
-    acc.push if aCase.length != 0 then aCase else [a.execute field]
-    acc
-  , []
-  combos = destoroyah.combo.apply null, edgeCases
+  edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
+  combos = destoroyah.combo edgeCases
 
   for comboArgs in combos
     unless destoroyah.fulfillsHope func, comboArgs, hope
