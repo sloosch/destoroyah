@@ -88,10 +88,10 @@ class Destoroyah extends MonsterEventEmitter
       @rampages.push rampage
     return
   _registerAdditionalAttacks : ->
-    attackModule.registerAttack attackName, true, attackConstr for attackName, attackConstr of @additionalAttack
+    attackModule.registerAttack(attackName, true, attackConstr) for attackName, attackConstr of @additionalAttack
     return
   _unregisterAdditionalAttacks : ->
-    attackModule.unregisterAttack attackName for attackName, attackConstr of @additionalAttack
+    attackModule.unregisterAttack(attackName) for attackName, attackConstr of @additionalAttack
     return
   awake : ->
     @reset()

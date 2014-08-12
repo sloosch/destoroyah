@@ -5,8 +5,11 @@ exports.attacks = attackRegistry = {pileOf : {}}
 
 exports.registerAttack = registerAttack = (attackName, pile, constr) ->
   attackRegistry[attackName] = -> constr.apply null, arguments
-  attackRegistry.pileOf[attackName] = -> new PileOfAttack(attackRegistry[attackName].apply null, arguments) if pile
-exports.unregisterAttack = unregisterAttack = (attackName) -> delete attackRegistry[attackName]
+  if pile
+    attackRegistry.pileOf[attackName] = -> new PileOfAttack(attackRegistry[attackName].apply null, arguments)
+exports.unregisterAttack = unregisterAttack = (attackName) ->
+  delete attackRegistry[attackName]
+  delete attackRegistry.pileOf[attackName]
 
 exports.Attack = class Attack
   constructor : (@args...) -> @_init.apply @, args
