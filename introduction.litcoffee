@@ -16,7 +16,7 @@ You may want to rename the attack when having multiple arguments of the same typ
 
     rampage 'on quux', (pInt_fooBar, int_Higgs, int_Boson, string_name) -> foo(pInt_fooBar, int_Higgs, int_Boson, string_name)
 
-A rampage will end when the function doesn't fulfills your **hope** or after the monster calms down based on his **angryness**.  
+A rampage will end when the function doesn't fulfills your **hope** or after the monster calms down based on his **angryness**.
 By default we hope that the return value of each attack is true. This time lets hope that the value is defined
 
     rampage 'on bar', hoping.isDefined(), (int, sign) -> quux(int, sign)
@@ -41,7 +41,7 @@ you may also reference a just equipped attack again
 
     equpWith 'pileOfFooAttacks', -> attack.pileOf.fooAttack()
 
-where _attack.pileOf.<attack_name>_ will generate an array of some length with the given attack e.g.
+where `attack.pileOf.<attack_name>` will generate an array of some length with the given attack e.g.
 
     equipWith 'pileOfInts', -> attack.pileOf.int()
 
@@ -59,7 +59,7 @@ the edge case of _int_ is 0 and the edge case of a pile is an empty array
 
     rampage 'on baz with int and pile', (int, pileOfInts) -> quux(int, pileOfInts) -> 42
 
-destoroyah is evil enough to test each combination of these edge cases e.g. above attack will include [0, []], [<any int>, []], [0, <any pile>]
+destoroyah is evil enough to test each combination of these edge cases e.g. above attack will include `[0, []], [<any int>, []], [0, <any pile>]`
 when using an _anyOf_ attack we can define our own edge case
 
     equipWith 'fooAttackWithEdges', -> attack.anyOf ['foo', 'bar'], ['baz', null]
