@@ -1,0 +1,53 @@
+#!/usr/bin/env node
+var DestoroyahRunner, failed, gaze, glob, globs, path, pkg, program, run;
+
+DestoroyahRunner = require('./../lib/runner/default');
+
+gaze = require('gaze');
+
+glob = require('glob');
+
+path = require('path');
+
+program = require('commander');
+
+pkg = require('./../package.json');
+
+try {
+  require('coffee-script').register();
+} catch (_error) {}
+
+program.version(pkg.version).usage('[options] [files]').option('-w, --watch', 'run disasters on file changes').parse(process.argv);
+
+globs = program.args;
+
+if (globs.length === 0) {
+  globs = ['disasters/*'];
+}
+
+run = function() {
+  var files, runner;
+  files = globs.reduce((function(acc, g) {
+    return acc.concat(glob.sync(g));
+  }), []).map(function(e) {
+    return path.resolve(e);
+  });
+  runner = new DestoroyahRunner(files);
+  return runner.run();
+};
+
+if (program.watch != null) {
+  gaze(globs, function(err, watcher) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    return this.on('all', run);
+  });
+}
+
+failed = run();
+
+if ((program.watch == null) && failed) {
+  process.exit(1);
+}

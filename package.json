@@ -1,25 +1,33 @@
 {
-  "name": "karma-destoroyah",
-  "version": "0.0.0",
-  "description": "Destoroyah karma test runner",
-  "main": "lib/destoroyah/main.js",
+  "name": "destoroyah",
+  "version": "0.1.0",
+  "description": "disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment",
+  "main": "lib/destoroyah",
+  "browser": "lib/destoroyah/web/destoroyah.js",
+  "bin": {
+    "destoroyah": "./bin/destoroyah"
+  },
   "scripts": {
-    "test": "gulp; node ./lib/runner/index.js ./disasters/*Zil.coffee;karma start --single-run"
+    "test": "gulp; node ./bin/destoroyah ./disasters/*Zil.coffee"
   },
   "keywords": [
-    "karma",
-    "karma-plugin",
-    "karm-adapter",
-    "destoroyah"
+    "destoroyah",
+    "test",
+    "tdd",
+    "bdd",
+    "ddd",
+    "disaster driven development",
+    "quickcheck"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "coffee-script": "^1.7.1",
     "coffeeify": "^0.7.0",
     "gulp": "^3.8.7",
     "gulp-browserify": "^0.5.0",
     "gulp-coffee": "^2.1.1",
+    "gulp-header": "^1.0.5",
     "gulp-rename": "^1.2.0",
     "karma": "^0.12.21",
     "karma-coffee-preprocessor": "^0.2.1",
@@ -36,6 +44,7 @@
   "homepage": "https://github.com/sloosch/destoroyah",
   "dependencies": {
     "chalk": "^0.5.1",
+    "commander": "^2.3.0",
     "gaze": "^0.6.4",
     "glob": "^4.0.5",
     "log-symbols": "^1.0.0"

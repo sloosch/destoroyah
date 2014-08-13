@@ -3,7 +3,7 @@ awake 'Attacks', ->
   equipWith 'pileOfFn', -> attack.anyOf({fnName : fnName, fn : fn} for fnName, fn of attack.pileOf)
   equipWith 'anObject', -> attack.object({foo : 'string', baz : 'int'})
   equipWith 'anItem', -> attack.anyOf(['foo', 1], [999, 'baz'])
-  
+
   rampage 'on decimal', (decimal) -> typeof decimal == 'number'
   rampage 'on positive decimal', (pDecimal) -> typeof pDecimal == 'number' && pDecimal >= 0
   rampage 'on negative decimal', (nDecimal) -> typeof nDecimal == 'number' && nDecimal <= 0

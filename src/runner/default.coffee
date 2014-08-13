@@ -14,12 +14,18 @@ module.exports = class DestoroyahRunner
   _unloadFiles : ->
     @files.forEach (file) ->  delete require.cache[file]
   run : ->
+    failed = false
     @_exposeGlobals()
+    detach = []
+    detach.push destoroyah.bitterStruggle.on 'defeated', -> failed = true
+    detach.push destoroyah.bitterStruggle.on 'error rampage', -> failed = true
     try
       @_loadFiles()
       survivor()(destoroyah.bitterStruggle)
       destoroyah.bitterStruggle.fight()
+      failed
     finally
       @_hideGlobals()
       destoroyah.bitterStruggle.surrender()
       @_unloadFiles()
+      detach.forEach (f) -> f()
