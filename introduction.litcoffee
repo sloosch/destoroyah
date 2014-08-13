@@ -1,13 +1,13 @@
-*awake* a monster of choice going on a rampage on your functions
-Here we've named the creature 'evil monster' with an *angryness* of 123 (when omitted, defaults to 100)
+**awake** a monster of choice going on a rampage on your functions
+Here we've named the creature 'evil monster' with an **angryness** of 123 (when omitted, defaults to 100)
 
     awake 'evil monster', 123, ->
 
-let your creature go on a *rampage* on the foo function
+let your creature go on a **rampage** on the foo function
 
     rampage 'on foo function',(pInt, bool) -> foo(pInt, bool) > 100
 
-the arguments supplied to the rampage function are *attacks*. These attacks are generated automagically for you. In our case for each attempt of destoroyah to breakthrough we will get a different *p*ositive*Int*eger and *bool*ean.
+the arguments supplied to the rampage function are **attacks**. These attacks are generated automagically for you. In our case for each attempt of destoroyah to breakthrough we will get a different **p**ositive**Int**eger and **bool**ean.
 Here is an rampage with all built-in attacks which can be used without any previous setup
 
     rampage 'with everything', (decimal, pDecimal, nDecimal, int, pInt, nInt, bool, sign, char, string) -> surrender()
@@ -16,13 +16,13 @@ You may want to rename the attack when having multiple arguments of the same typ
 
     rampage 'on quux', (pInt_fooBar, int_Higgs, int_Boson, string_name) -> foo(pInt_fooBar, int_Higgs, int_Boson, string_name)
 
-A rampage will end when the function doesn't fulfills your *hope* or after the monster calms down based on his *angryness*.
+A rampage will end when the function doesn't fulfills your **hope** or after the monster calms down based on his **angryness**.  
 By default we hope that the return value of each attack is true. This time lets hope that the value is defined
 
     rampage 'on bar', hoping.isDefined(), (int, sign) -> quux(int, sign)
 
 the rampage will end when _quux_ doesn't return a defined value
-There are many more predefined *hopes* - take a look at the *HopeZil* disaster.
+There are many more predefined **hopes** - take a look at the **HopeZil** disaster.
 
 Equip the monster with some special attacks
 
@@ -79,5 +79,5 @@ _quux_ will be attacked four times [true, 1], [true, -1], [false, 1] and [false,
 attacks with infinity possibilities will stop when the monster calms down
 
     rampage 'on baz with decimal', (decimal) -> quux(decimal) > 42
-    
-_quux_ is attacked *angryness* times because a decimal number has an infinity number of cases
+
+_quux_ is attacked **angryness** times because a decimal number has an infinity number of cases
