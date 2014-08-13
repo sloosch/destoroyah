@@ -45,7 +45,7 @@ where `attack.pileOf.<attack_name>` will generate an array of some length with t
 
     equipWith 'pileOfInts', -> attack.pileOf.int()
 
-will give an array of ints  
+will give an array of ints
 referencing when creating an object is also possible
 
     equipWith 'quuxObject', -> attack.object {bar : 'barObject', name : 'string'}
@@ -70,7 +70,7 @@ the monster is smart enough to may stop the rampage early when he did tried all 
 
     rampage 'on baz with fooAttack', (fooAttack) -> quux(fooAttack) > 42
 
-_quux_ will be attacked just three times because _fooAttack_ just defined three cases
+_quux_ will be attacked just three times because _fooAttack_ just defined three cases  
 also works for boolean and sign attacks even in combination
 
     rampage 'on baz with bool and sign', (bool, sign) -> quux(bool, sign) > 42
