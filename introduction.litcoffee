@@ -4,7 +4,7 @@ Here we've named the creature 'evil monster' with an **angryness** of 123 (when 
 
     awake 'evil monster', 123, ->
 
-let your creature go on a **rampage** on the foo function
+let the creature go on a **rampage** on the foo function
 
     rampage 'on foo function',(pInt, bool) -> foo(pInt, bool) > 100
 
@@ -12,7 +12,7 @@ the arguments supplied to the rampage function are **attacks**.
 These attacks are generated automagically for you.
 In our case for each attempt of destoroyah to breakthrough we will get a different positiveInteger and boolean.
 
-Here is an rampage with all built-in attacks which can be used without any previous setup
+Here is a rampage with all built-in attacks which can be used without any previous setup
 
     rampage 'with everything', (decimal, pDecimal, nDecimal, int, pInt, nInt, bool, sign, char, string) -> surrender()
 
@@ -45,7 +45,7 @@ of course renaming is possible
 
 you may also reference a just equipped attack again
 
-    equpWith 'pileOfFooAttacks', -> attack.pileOf.fooAttack()
+    equipWith 'pileOfFooAttacks', -> attack.pileOf.fooAttack()
 
 where `attack.pileOf.<attack_name>` will generate an array of some length with the given attack e.g.
 
