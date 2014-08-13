@@ -7,7 +7,7 @@ let your creature go on a **rampage** on the foo function
 
     rampage 'on foo function',(pInt, bool) -> foo(pInt, bool) > 100
 
-the arguments supplied to the rampage function are **attacks**. These attacks are generated automagically for you. In our case for each attempt of destoroyah to breakthrough we will get a different **p**ositive**Int**eger and **bool**ean.
+the arguments supplied to the rampage function are **attacks**. These attacks are generated automagically for you. In our case for each attempt of destoroyah to breakthrough we will get a different positiveInteger and boolean.
 Here is an rampage with all built-in attacks which can be used without any previous setup
 
     rampage 'with everything', (decimal, pDecimal, nDecimal, int, pInt, nInt, bool, sign, char, string) -> surrender()
