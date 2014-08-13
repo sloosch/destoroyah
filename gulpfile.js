@@ -8,7 +8,6 @@ var paths = {
     destoroyah : './src/destoroyah/*.coffee',
     destoroyahWeb : './src/destoroyah/index.coffee',
     destoroyahBin : './src/bin/*.coffee',
-    karma : './src/karma/*.coffee',
     reporter : './src/reporter/*.coffee',
     runner : './src/runner/*.coffee'
   }
@@ -44,24 +43,17 @@ gulp.task('reporter', function() {
   .pipe(gulp.dest('./lib/reporter'));
 });
 
-gulp.task('karma', function() {
-  return gulp.src(paths.scripts.karma)
-  .pipe(coffee())
-  .pipe(gulp.dest('./lib/destoroyah/web/karma'));
-});
-
 gulp.task('runner', function() {
   return gulp.src(paths.scripts.runner)
   .pipe(coffee({bare : true}))
   .pipe(gulp.dest('./lib/runner'));
 });
 
-gulp.task('default', ['destoroyah', 'destoroyah-bin', 'reporter', 'runner', 'destoroyah-web', 'karma']);
+gulp.task('default', ['destoroyah', 'destoroyah-bin', 'reporter', 'runner', 'destoroyah-web']);
 
 gulp.task('watch', ['default'], function() {
   gulp.watch(paths.scripts.destoroyah, ['destoroyah', 'destoroyah-web']);
   gulp.watch(paths.scripts.destoroyahBin, ['destoroyah-bin']);
-  gulp.watch(paths.scripts.karma, ['karma']);
   gulp.watch(paths.scripts.reporter, ['reporter']);
   gulp.watch(paths.scripts.runner, ['runner']);
 });

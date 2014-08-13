@@ -44,3 +44,6 @@ You may want to consider using coffee-script to keep your disasters as clean as 
 ###Burn!
 open the terminal and type `destoroyah [--watch] [disasters]` e.g. `destoroyah './disasters/*Zil.coffee'` to run each disaster in the 'disasters' folder.  
 `--watch` will run the disasters after each file change
+
+###Karma
+to run with karma use [karma-destoroyah](https://github.com/sloosch/karma-destoroyah)
