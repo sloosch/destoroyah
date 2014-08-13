@@ -45,7 +45,7 @@ where `attack.pileOf.<attack_name>` will generate an array of some length with t
 
     equipWith 'pileOfInts', -> attack.pileOf.int()
 
-will give an array of ints
+will give an array of ints  
 referencing when creating an object is also possible
 
     equipWith 'quuxObject', -> attack.object {bar : 'barObject', name : 'string'}
