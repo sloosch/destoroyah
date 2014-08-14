@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Destoroyah by sloosch</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Destoroyah</h1>
+          <h2>disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/sloosch/destoroyah/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/sloosch/destoroyah/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/sloosch/destoroyah" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h2>
+<a name="disaster-driven-development" class="anchor" href="#disaster-driven-development"><span class="octicon octicon-link"></span></a>Disaster Driven Development</h2>
+
+<p><em>disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment</em></p>
+
+<blockquote>
+<p>[...]Destoroyah is also the only enemy that actually hurt Godzilla emotionally when he killed Godzilla Jr.</p>
+</blockquote>
+
+<h3>
+<a name="what-is-this-for" class="anchor" href="#what-is-this-for"><span class="octicon octicon-link"></span></a>What is this for?</h3>
+
+<p>As an example we will try to write a function that repeats a char n times  </p>
+
+<h4>
+<a name="bdd-style-coding-by-example" class="anchor" href="#bdd-style-coding-by-example"><span class="octicon octicon-link"></span></a>BDD style, coding by example</h4>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">describe</span> <span class="s">'char repeater'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="nx">it</span> <span class="s">'should return a string of given length'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+    <span class="nv">generated = </span><span class="nx">charRepeater</span><span class="p">(</span><span class="s">'c'</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nx">expect</span><span class="p">(</span><span class="nx">generated</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+<p>will may raise the implementation</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nv">charRepeater = </span><span class="nf">(char, length) -&gt;</span> <span class="p">(</span><span class="nx">char</span> <span class="k">for</span> <span class="p">[</span><span class="mi">1</span><span class="p">..</span><span class="nx">length</span><span class="p">]).</span><span class="nx">join</span> <span class="s">''</span>
+</pre></div>
+
+<p>Test is green! Deploy!<br>
+let the disaster happen: <code>charRepeater('a', 0)</code> ... gives <code>a</code> ?! but the test said its ok!<br>
+forgot this case:</p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">it</span> <span class="s">'should return a zero length string when given length is 0'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="nv">generated = </span><span class="nx">charRepeater</span><span class="p">(</span><span class="s">'c'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">generated</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+<p>...</p>
+
+<h4>
+<a name="ddd-style-no-need-to-think-of-every-possible-argument" class="anchor" href="#ddd-style-no-need-to-think-of-every-possible-argument"><span class="octicon octicon-link"></span></a>DDD style, no need to think of every possible argument</h4>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nx">awake</span> <span class="s">'Repeater'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="nx">rampage</span> <span class="s">'on the char repeater'</span><span class="p">,</span> <span class="nf">(char, pInt_length) -&gt;</span>
+    <span class="nv">generated = </span><span class="nx">charRepeater</span><span class="p">(</span><span class="nx">char</span><span class="p">,</span> <span class="nx">pInt_length</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">generated</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="mi">0</span> <span class="k">if</span> <span class="nx">char</span> <span class="o">is</span> <span class="kc">null</span> <span class="o">or</span> <span class="nx">char</span> <span class="o">is</span> <span class="s">''</span>
+    <span class="nx">generated</span><span class="p">.</span><span class="nx">length</span> <span class="o">is</span> <span class="nx">pInt_length</span>
+</pre></div>
+
+<p>now <strong>destoroyah</strong> will complain that the <code>charRepeater</code> doesn't fulfill our hopes in each case<br><strong>destoroyah</strong> will force you to the correct implementation  </p>
+
+<div class="highlight highlight-coffeescript"><pre><span class="nv">charRepeater = </span><span class="nf">(char, length) -&gt;</span>
+  <span class="k">return</span> <span class="s">''</span> <span class="k">if</span> <span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span>
+  <span class="p">(</span><span class="nx">char</span> <span class="k">for</span> <span class="p">[</span><span class="mi">1</span><span class="p">..</span><span class="nx">length</span><span class="p">]).</span><span class="nx">join</span> <span class="s">''</span>
+</pre></div>
+
+<h3>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h3>
+
+<p><code>npm install -g destoroyah</code></p>
+
+<h3>
+<a name="disasters" class="anchor" href="#disasters"><span class="octicon octicon-link"></span></a>Disasters</h3>
+
+<p>Write your <strong>disasters</strong> according to the <a href="https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee">introduction</a>
+You may want to consider using coffee-script to keep your disasters as clean as possible.</p>
+
+<h3>
+<a name="burn" class="anchor" href="#burn"><span class="octicon octicon-link"></span></a>Burn!</h3>
+
+<p>open the terminal and type <code>destoroyah [--watch] [disasters]</code> e.g. <code>destoroyah './disasters/*Zil.coffee'</code> to run each disaster in the 'disasters' folder.<br><code>--watch</code> will run the disasters after each file change in the current directory</p>
+
+<pre><code>Usage: destoroyah [options] [files]
+
+  Options:
+
+    -h, --help                         output usage information
+    -V, --version                      output the version number
+    -w, --watch                        run disasters on file changes (changes on disaster files are always watched, even when -e or -d are set)
+    -e, --watchExtension &lt;extensions&gt;  file extension to watch for changes - defaults to "js, coffee"
+    -d, --watchDirectory &lt;paths&gt;       only watch files in this directories - defaults to the current working directory
+</code></pre>
+
+<h3>
+<a name="karma" class="anchor" href="#karma"><span class="octicon octicon-link"></span></a>Karma</h3>
+
+<p>to run with karma use <a href="https://github.com/sloosch/karma-destoroyah">karma-destoroyah</a></p>
+        </section>
+
+        <footer>
+          Destoroyah is maintained by <a href="https://github.com/sloosch">sloosch</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
