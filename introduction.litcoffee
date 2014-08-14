@@ -94,3 +94,20 @@ attacks with infinity possibilities will stop when the monster calms down
     rampage 'on baz with decimal', (decimal) -> quux(decimal) > 42
 
 _quux_ is attacked **angryness** times because a decimal number has an infinity number of cases
+
+
+do some setup when destoroyah awakes
+
+    whenAwake -> loadSomethingForEveryRampage()
+
+do some cleanup work when destoroyah has completed all rampages and calms down
+
+    whenCalm -> cleanAndRebuilt()
+
+you may like to setup something before each rampage
+
+    beforeRampage -> setupMocks()
+
+or after each rampage
+
+    afterRampage -> resetSomething()
