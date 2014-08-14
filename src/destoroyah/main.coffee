@@ -2,7 +2,7 @@ fieldModule = require './field'
 attackModule = require './attack'
 hopingModule = require './hopes'
 constants = require './const'
-
+util = require './util'
 field = fieldModule
 attack = attackModule.attacks
 hoping = hopingModule.hopes
@@ -19,6 +19,7 @@ module.exports = destoroyah =
     field : fieldModule
     attack : attackModule
     hoping : hopingModule
+    util : util
 
 class MonsterEventEmitter
   constructor : -> @listeners = {}

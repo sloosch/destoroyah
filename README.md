@@ -18,19 +18,27 @@ charRepeater = (char, length) -> (char for [1..length]).join ''
 ```
 Test is green! Deploy!  
 let the disaster happen: `charRepeater('a', 0)` ... gives `a` ?! but the test said its ok!  
-...bugfixing time...
-
+forgot this case:
+```coffeescript
+it 'should return a zero length string when given length is 0', ->
+  generated = charRepeater('c', 0)
+  expect(generated.length).toBe(0)
+```
+...
 ####DDD style, no need to think of every possible argument  
 ```coffeescript
-awake 'repeater', ->
+awake 'Repeater', ->
   rampage 'on the char repeater', (char, pInt_length) ->
     generated = charRepeater(char, pInt_length)
-    generated.length == pInt_length
+    return generated.length is 0 if char is null or char is ''
+    generated.length is pInt_length
 ```
 now **destoroyah** will complain that the `charRepeater` doesn't fulfill our hopes in each case  
 **destoroyah** will force you to the correct implementation  
 ```coffeescript
-charRepeater = (char, length) -> if length > 0 then (char for [1..length]).join '' else ''
+charRepeater = (char, length) ->
+  return '' if length == 0
+  (char for [1..length]).join ''
 ```
 
 ###Install
