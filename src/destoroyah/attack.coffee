@@ -124,3 +124,10 @@ exports.PileOfAttack = class PileOfAttack extends Attack
     (innerAttack.execute(dist) for [1..len])
 
 registerAttack 'pile', true, (innerAttack) -> new PileOfAttack(innerAttack)
+
+exports.FunctionAttack = class FunctionAttack extends Attack
+  _init : (@fn, @edges = []) ->
+  edgeCases : -> @edges
+  _perform : (dist) -> @fn dist
+
+registerAttack 'fn', true, (fn, edges) -> new FunctionAttack(fn, edges)
