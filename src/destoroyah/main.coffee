@@ -22,16 +22,24 @@ module.exports = destoroyah =
     util : util
 
 class MonsterEventEmitter
-  constructor : -> @listeners = {}
-  _fireEvent : (eventName, args...) -> (f.apply(@, args) for f in @listeners[eventName]) if eventName of @listeners
+  constructor : ->
+    @listeners = {}
+    @_eventId = 0
+  _fireEvent : (eventName, args...) ->
+    return unless eventName of @listeners
+    f.apply @, args for id, f of @listeners[eventName]
   on : (eventName, f) ->
-    @listeners[eventName] = [] unless eventName of @listeners
-    @listeners[eventName].push f
-    =>
-      index = @listeners[eventName].indexOf f
-      @listeners[eventName].splice index, 1 unless index < 0
+    @_eventId++
+    @listeners[eventName] = {} unless eventName of @listeners
+    eventId = eventName + '_' + @_eventId
+    @listeners[eventName][eventId] = f
+    => delete @listeners[eventName][eventId]
+  once : (eventName, f) ->
+    detach = @.on eventName, ->
+      f.apply @, arguments
+      detach()
   through : (eventName, that, renamedTo, addition...) ->
-    @on eventName, =>
+    @on eventName, ->
       args = [@]
       args = args.concat if arguments.length > 0 then (arg for arg in arguments) else []
       args.unshift renamedTo || eventName
@@ -73,10 +81,7 @@ destoroyah.bitterStruggle = new BitterStruggle()
 ###
 class Destoroyah extends MonsterEventEmitter
   reset : ->
-    @additionalAttack = {}
     @rampages = []
-    @befores = []
-    @afters = []
     f() for f in @detach if @detach?
     @detach = []
   constructor : (@reason, @angryness, @setup) ->
@@ -88,12 +93,6 @@ class Destoroyah extends MonsterEventEmitter
       @detach.push rampage.through 'defeated', @
       @rampages.push rampage
     return
-  _registerAdditionalAttacks : ->
-    attackModule.registerAttack(attackName, true, attackConstr) for attackName, attackConstr of @additionalAttack
-    return
-  _unregisterAdditionalAttacks : ->
-    attackModule.unregisterAttack(attackName) for attackName, attackConstr of @additionalAttack
-    return
   awake : ->
     @reset()
     @setup()
@@ -102,16 +101,12 @@ class Destoroyah extends MonsterEventEmitter
     try
       for rampage in @rampages
         @_fireEvent 'start rampage', rampage
-        @_registerAdditionalAttacks()
         try
-          before() for before in @befores
           res = rampage.punch @angryness
-          after() for after in @afters
           @_fireEvent 'end rampage', rampage, res
         catch error
           @_fireEvent 'error rampage', rampage, error
     finally
-      @_unregisterAdditionalAttacks()
       @_fireEvent 'end'
     return
 
@@ -157,9 +152,21 @@ destoroyah.rampage = (reason, hope, f) ->
 ###
   Setup
 ###
-destoroyah.equipWith = (forceName, f) -> destoroyah.bitterStruggle.activeMonster.additionalAttack[forceName] = -> f()
-destoroyah.beforeAttack = (f) -> destoroyah.bitterStruggle.activeMonster.befores.push f
-destoroyah.afterAttack = (f) -> destoroyah.bitterStruggle.activeMonster.afters.push f
+destoroyah.equipWith = (forceName, f) ->
+  destoroyah.bitterStruggle.activeMonster.once 'start', -> attackModule.registerAttack forceName, true, f
+  destoroyah.bitterStruggle.activeMonster.once 'end', -> attackModule.unregisterAttack forceName
+destoroyah.beforeRampage = (f) ->
+  detach = destoroyah.bitterStruggle.activeMonster.on 'start rampage', f
+  destoroyah.bitterStruggle.activeMonster.once 'end', -> detach()
+destoroyah.afterRampage = (f) ->
+  detach = []
+  detach.push destoroyah.bitterStruggle.activeMonster.on 'end rampage', f
+  detach.push destoroyah.bitterStruggle.activeMonster.on 'error rampage', f
+  destoroyah.bitterStruggle.activeMonster.once 'end', -> d() for d in detach
+destoroyah.whenAwake = (f) ->
+  destoroyah.bitterStruggle.activeMonster.once 'start', f
+destoroyah.whenCalm = (f) ->
+  destoroyah.bitterStruggle.activeMonster.once 'end', f
 
 ###
   main test runner

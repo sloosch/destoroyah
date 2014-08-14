@@ -4,7 +4,17 @@ chalk = require 'chalk'
 
 module.exports = class DestoroyahRunner
   constructor : (@files) ->
-  _exposable : -> ['awake', 'rampage', 'field', 'attack', 'equipWith', 'hoping', 'beforeAttack', 'afterAttack']
+  _exposable : -> [
+    'awake',
+    'rampage',
+    'field',
+    'attack'
+    'equipWith',
+    'hoping',
+    'beforeRampage',
+    'afterRampage',
+    'whenAwake',
+    'whenCalm']
   _exposeGlobals : ->
     @_exposable().forEach (propName) -> global[propName] = destoroyah[propName]
   _hideGlobals : ->
