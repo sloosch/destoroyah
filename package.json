@@ -37,7 +37,7 @@
   "bugs": {
     "url": "https://github.com/sloosch/destoroyah/issues"
   },
-  "homepage": "https://github.com/sloosch/destoroyah",
+  "homepage": "http://sloosch.github.io/destoroyah",
   "dependencies": {
     "chalk": "^0.5.1",
     "commander": "^2.3.0",
