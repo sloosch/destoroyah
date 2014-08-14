@@ -25,7 +25,8 @@ it 'should return a zero length string when given length is 0', ->
   expect(generated.length).toBe(0)
 ```
 ...
-####DDD style, no need to think of every possible argument  
+####DDD style, no need to think of every possible argument
+write a disaster
 ```coffeescript
 awake 'Repeater', ->
   rampage 'on the char repeater', (char, pInt_length) ->
