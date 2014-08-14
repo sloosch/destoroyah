@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var DestoroyahRunner, failed, gaze, glob, globs, path, pkg, program, run;
+var DestoroyahRunner, defaultExtensions, disasterFiles, failed, gaze, glob, list, path, pkg, program, run, toWatch, wd;
 
 DestoroyahRunner = require('./../lib/runner/default');
 
@@ -17,17 +17,21 @@ try {
   require('coffee-script').register();
 } catch (_error) {}
 
-program.version(pkg.version).usage('[options] [files]').option('-w, --watch', 'run disasters on file changes').parse(process.argv);
+list = function(val) {
+  return val.split(', ');
+};
 
-globs = program.args;
+program.version(pkg.version).usage('[options] [files]').option('-w, --watch', 'run disasters on file changes (changes on disaster files are always watched, even when -e or -d are set)').option('-e, --watchExtension <extensions>', 'file extension to watch for changes - defaults to "js, coffee"', list).option('-d, --watchDirectory <paths>', 'only watch files in this directories - defaults to the current working directory', list).parse(process.argv);
 
-if (globs.length === 0) {
-  globs = ['disasters/*'];
+disasterFiles = program.args;
+
+if (disasterFiles.length === 0) {
+  disasterFiles = ['disasters/*'];
 }
 
 run = function() {
   var files, runner;
-  files = globs.reduce((function(acc, g) {
+  files = disasterFiles.reduce((function(acc, g) {
     return acc.concat(glob.sync(g));
   }), []).map(function(e) {
     return path.resolve(e);
@@ -37,12 +41,28 @@ run = function() {
 };
 
 if (program.watch != null) {
-  gaze(globs, function(err, watcher) {
+  wd = program.watchDirectory != null ? program.watchDirectory : [process.cwd()];
+  defaultExtensions = ['js', 'coffee'];
+  if (program.watchExtension != null) {
+    defaultExtensions = program.watchExtension;
+  }
+  toWatch = disasterFiles.slice(0);
+  wd.forEach(function(dir) {
+    toWatch = toWatch.concat(defaultExtensions.map(function(e) {
+      return dir + '/**/*.' + e;
+    }));
+    return toWatch.push('!' + dir + '/node_modules/**');
+  });
+  gaze(toWatch, function(err, watcher) {
     if (err) {
       console.error(err);
       process.exit(1);
     }
-    return this.on('all', run);
+    return this.on('all', function(event, filepath) {
+      console.log(event + ' ' + filepath);
+      delete require.cache[filepath];
+      return run();
+    });
   });
 }
 

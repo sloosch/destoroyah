@@ -51,7 +51,17 @@ You may want to consider using coffee-script to keep your disasters as clean as 
 
 ###Burn!
 open the terminal and type `destoroyah [--watch] [disasters]` e.g. `destoroyah './disasters/*Zil.coffee'` to run each disaster in the 'disasters' folder.  
-`--watch` will run the disasters after each file change
+`--watch` will run the disasters after each file change in the current directory
+
+    Usage: destoroyah [options] [files]
+
+      Options:
+
+        -h, --help                         output usage information
+        -V, --version                      output the version number
+        -w, --watch                        run disasters on file changes (changes on disaster files are always watched, even when -e or -d are set)
+        -e, --watchExtension <extensions>  file extension to watch for changes - defaults to "js, coffee"
+        -d, --watchDirectory <paths>       only watch files in this directories - defaults to the current working directory
 
 ###Karma
 to run with karma use [karma-destoroyah](https://github.com/sloosch/karma-destoroyah)
