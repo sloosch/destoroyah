@@ -26,7 +26,7 @@ it 'should return a zero length string when given length is 0', ->
 ```
 ...
 ####DDD style, no need to think of every possible argument
-write a disaster
+write a [disaster](https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee)
 ```coffeescript
 awake 'Repeater', ->
   rampage 'on the char repeater', (char, pInt_length) ->
