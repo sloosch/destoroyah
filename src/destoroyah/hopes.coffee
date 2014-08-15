@@ -1,7 +1,8 @@
 exports.hopes = hopeRegistry = {not : (f) -> (v) -> not f v}
-exports.registerHope = registerHope = (hopeName, f) ->
+exports.registerHope = registerHope = (hopeName, notable = true, f) ->
   hopeRegistry[hopeName] = -> f arguments...
-  hopeRegistry.not[hopeName] = -> hopeRegistry.not(f arguments...)
+  if notable
+    hopeRegistry.not[hopeName] = -> hopeRegistry.not(f arguments...)
 exports.unregisterHope = unregisterHope = (hopeName) -> delete hopeRegistry[hopeName]
 
 defaultHopes =
@@ -14,17 +15,36 @@ defaultHopes =
   isNull : -> (v) -> v == null
   isInRange : (from, to, edge) -> (v) -> v > from && v < to || (edge && (v == from || v == to))
   isOneOf : (arr) -> (v) -> v in arr
-  didHappened : (hopes..., prediction) ->
-    allResults = []
-    f = (v) ->
-      allResults.push v
-      return
-    f.finally = ->
-      for result in allResults
-        return prediction if hopes.reduce ((acc, f) -> acc || f(result)), false
-      !prediction
-    f
-  sometimes : (hopes...) -> defaultHopes.didHappened(hopes..., yes)
-  never : (hopes...) -> defaultHopes.didHappened(hopes..., no)
 
-registerHope hopeName, f for hopeName, f of defaultHopes
+registerHope hopeName, true, f for hopeName, f of defaultHopes
+
+that = (guard = -> true) ->
+  collected = []
+  f = (v) ->
+    collected.push v if guard v, collected
+    return
+  maybeNot = (inv, f, args...) -> if not inv then f args... else not f args...
+  _finally = (fn, some, inv) ->
+    collected.reduce (ff, v) ->
+      fn.reduce (hopeAcc, hope) ->
+        (!some && hopeAcc && maybeNot inv, hope, v) || (some && (hopeAcc || maybeNot inv, hope, v))
+      ,ff
+    ,!some
+  all : (fn...) ->
+    f.finally = ->
+      _finally fn, false, false
+    f
+  none : (fn...) ->
+    f.finally = -> _finally fn, false, true
+    f
+  some : (fn...) ->
+    f.finally = -> _finally fn, true, false
+    f
+  notAll : (fn...) ->
+    f.finally = -> _finally fn, true, true
+    f
+  fulfills : (fn) ->
+    f.finally = -> fn collected
+    f
+
+registerHope 'that', false, that

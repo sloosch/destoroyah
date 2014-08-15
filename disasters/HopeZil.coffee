@@ -24,5 +24,7 @@ awake 'Hope', ->
   rampage 'on is one of', hoping.isOneOf(['foo', 'bar', 'baz']), (setOfFoo) -> setOfFoo
   rampage 'on is not one of', hoping.not.isOneOf(['quux', 'zap', 'higgs']), (setOfFoo) -> setOfFoo
 
-  rampage 'on sometimes true', hoping.sometimes(hoping.isTrue()), (bool) -> bool
-  rampage 'on is never true', hoping.never(hoping.isTrue()), (setOfFoo) -> setOfFoo
+  rampage 'on some are true', hoping.that().some(hoping.isTrue()), (bool) -> bool
+  rampage 'on everyone is true with guard', hoping.that((v) -> v == true).all(hoping.isTrue()), (bool) -> bool
+  rampage 'on no one is true', hoping.that().none(hoping.isTrue()), (setOfFoo) -> setOfFoo
+  rampage 'on not all are the same', hoping.that().notAll(hoping.isEqual('foo')), (setOfFoo) -> setOfFoo

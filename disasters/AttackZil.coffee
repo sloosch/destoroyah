@@ -26,10 +26,10 @@ awake 'Attacks', ->
   rampage 'on integer', (int) -> typeof int == 'number' && (int | 0) - int == 0
   rampage 'on positive integer', (pInt) -> typeof pInt == 'number' && (pInt | 0) - pInt == 0 && pInt >= 0
   rampage 'on negative interger', (nInt) -> typeof nInt == 'number' && (nInt | 0) - nInt == 0 && nInt <= 0
-  rampage 'on positive decimal being greater than 0', hoping.sometimes((v) -> v > 0), (pDecimal) -> pDecimal
-  rampage 'on negative decimal being less than 0', hoping.sometimes((v) -> v < 0), (nDecimal) -> nDecimal
-  rampage 'on positive int being greater than 0', hoping.sometimes((v) -> v > 0), (pInt) -> pInt
-  rampage 'on negative int being less than 0', hoping.sometimes((v) -> v < 0), (nInt) -> nInt
+  rampage 'on positive decimal being greater than 0', hoping.that().some((v) -> v > 0), (pDecimal) -> pDecimal
+  rampage 'on negative decimal being less than 0', hoping.that().some((v) -> v < 0), (nDecimal) -> nDecimal
+  rampage 'on positive int being greater than 0', hoping.that().some((v) -> v > 0), (pInt) -> pInt
+  rampage 'on negative int being less than 0', hoping.that().some((v) -> v < 0), (nInt) -> nInt
   rampage 'on number limiting', (limitedNumbers) ->
     return true if limitedNumbers == null
     limitedNumbers.int >= -10 && limitedNumbers.int <= 10 &&
@@ -40,8 +40,8 @@ awake 'Attacks', ->
     limitedNumbers.nDecimal >= -10 && limitedNumbers.nDecimal <= 0
 
   rampage 'on the random generator', (random) -> random >= 0 && random <= 1
-  rampage 'on boolean', hoping.sometimes(hoping.isTrue(), hoping.isFalse()), (bool) -> bool
-  rampage 'on sign', hoping.sometimes(((v) -> v == -1), ((v) -> v == 1)), (sign) -> sign
+  rampage 'on boolean', hoping.that().some(hoping.isTrue(), hoping.isFalse()), (bool) -> bool
+  rampage 'on sign', hoping.that().some(((v) -> v == -1), ((v) -> v == 1)), (sign) -> sign
   rampage 'on char', (char) -> char == null || (typeof char == 'string' && (char.length == 0 || char.length == 1))
   rampage 'on string', (string) -> string == null || (typeof string == 'string')
   rampage 'on aCustomValue',  (aCustomValue) -> /^Call \d{0,3} for emergency$/.test aCustomValue
