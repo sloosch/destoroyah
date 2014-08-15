@@ -50,6 +50,9 @@ charRepeater = (char, length) ->
 Write your **disasters** according to the [introduction](https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee)
 You may want to consider using coffee-script to keep your disasters as clean as possible.
 
+###Can i win the Fields Medal?
+Yes you can [BhargavaZil](https://github.com/sloosch/destoroyah/blob/master/disasters/BhargavaZil.coffee)!
+
 ###Burn!
 open the terminal and type `destoroyah [--watch] [disasters]` e.g. `destoroyah './disasters/*Zil.coffee'` to run each disaster in the 'disasters' folder.  
 `--watch` will run the disasters after each file change in the current directory
