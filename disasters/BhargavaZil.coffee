@@ -21,6 +21,6 @@ awake 'Bhargava', Math.pow(19, 4), ->
   rampage 'on 7*a^2 + 2*b^2 + 2*c^2 + d^2',
   hoping.that(critical).fulfills(allCollected),
   (saneInt_a, saneInt_b, saneInt_c, saneInt_d) ->
-    7 * saneInt_a * saneInt_a + saneInt_b + 2 * saneInt_c * saneInt_c + saneInt_d * saneInt_d
+    7 * saneInt_a * saneInt_a + 2 * saneInt_b * saneInt_b + 2 * saneInt_c * saneInt_c + saneInt_d * saneInt_d
 
   #TODO add the other 6560 cases
