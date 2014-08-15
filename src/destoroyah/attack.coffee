@@ -55,7 +55,7 @@ exports.SignAttack = class SignAttack extends BoolAttack
 
 registerAttack 'sign', true, -> new SignAttack()
 
-class PDecimalAttack extends Attack
+exports.PDecimalAttack = class PDecimalAttack extends Attack
   edgeCases : -> [0, Math.sqrt(2)]
   _init : (@max=constants.MAX_NUMBER) ->
   _perform : (dist) -> dist() * @max
