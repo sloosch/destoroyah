@@ -17,7 +17,7 @@ awake 'Bhargava', Math.pow(19, 4), ->
   collectResult.finally = -> criticalInts.length == hit.length
 
   #choose the smallest number that satisfies n^2 >= 290
-  equipWith 'saneInt', -> attack.anyOf [0..18]
+  equipWith 'saneInt', -> attack.pInt 18
 
   rampage 'on a^2 + b^2 + c^2 + d^2', collectResult, (saneInt_a, saneInt_b, saneInt_c, saneInt_d) ->
     saneInt_a * saneInt_a + saneInt_b * saneInt_b + saneInt_c * saneInt_c + saneInt_d * saneInt_d

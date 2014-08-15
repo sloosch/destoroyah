@@ -14,17 +14,17 @@ defaultHopes =
   isNull : -> (v) -> v == null
   isInRange : (from, to, edge) -> (v) -> v > from && v < to || (edge && (v == from || v == to))
   isOneOf : (arr) -> (v) -> v in arr
-  didHappened : (hope, prediction) ->
+  didHappened : (hopes..., prediction) ->
     allResults = []
     f = (v) ->
       allResults.push v
       return
     f.finally = ->
       for result in allResults
-        return prediction if hope(result)
+        return prediction if hopes.reduce ((acc, f) -> acc || f(result)), false
       !prediction
     f
-  sometimes : (hope) -> defaultHopes.didHappened(hope, yes)
-  never : (hope) -> defaultHopes.didHappened(hope, no)
+  sometimes : (hopes...) -> defaultHopes.didHappened(hopes..., yes)
+  never : (hopes...) -> defaultHopes.didHappened(hopes..., no)
 
 registerHope hopeName, f for hopeName, f of defaultHopes

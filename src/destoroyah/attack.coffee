@@ -60,13 +60,13 @@ exports.PDecimalAttack = class PDecimalAttack extends Attack
   _init : (@max=constants.MAX_NUMBER) ->
   _perform : (dist) -> dist() * @max
 
-registerAttack 'pDecimal', true, -> new PDecimalAttack()
+registerAttack 'pDecimal', true, (max) -> new PDecimalAttack(max)
 
 exports.NDecimalAttack = class NDecimalAttack extends PDecimalAttack
   edgeCases : -> [0, -Math.sqrt(2)]
   _perform : (dist) -> -super(dist)
 
-registerAttack 'nDecimal', true, -> new NDecimalAttack()
+registerAttack 'nDecimal', true, (max) -> new NDecimalAttack(max)
 
 exports.DecimalAttack = class DecimalAttack extends PDecimalAttack
   edgeCases : -> [-Math.sqrt(2), 0, Math.sqrt(2)]
@@ -76,25 +76,43 @@ exports.DecimalAttack = class DecimalAttack extends PDecimalAttack
   _perform : (dist) ->
     @sign.execute(field.even) * super(dist)
 
-registerAttack 'decimal', true, -> new DecimalAttack()
+registerAttack 'decimal', true, (max) -> new DecimalAttack(max)
 
 exports.PIntAttack = class PIntAttack extends PDecimalAttack
   edgeCases : -> [0]
+  cases : ->
+    if @max <= constants.MAX_PILE_LEN
+      return (i for i in [0..@max])
+    return
   _perform : (dist) -> super(dist) | 0
 
-registerAttack 'pInt', true, -> new PIntAttack()
+registerAttack 'pInt', true, (max) -> new PIntAttack(max)
 
 exports.NIntAttack = class NIntAttack extends NDecimalAttack
   edgeCases : -> [0]
+  cases : ->
+    if @max <= constants.MAX_PILE_LEN
+      return (-i for i in [0..@max])
+    return
   _perform : (dist) -> super(dist) | 0
 
-registerAttack 'nInt', true, -> new NIntAttack()
+registerAttack 'nInt', true, (max) -> new NIntAttack(max)
 
 exports.IntAttack = class IntAttack extends DecimalAttack
   edgeCases : -> [0]
+  cases : ->
+    if 2 * @max <= constants.MAX_PILE_LEN
+      return (i for i in [-@max..@max])
+    return
   _perform : (dist) -> super(dist) | 0
 
-registerAttack 'int', true, -> new IntAttack()
+registerAttack 'int', true, (max) -> new IntAttack(max)
+
+exports.RandomAttack = class RandomAttack extends Attack
+  edgeCases : -> [0, 1]
+  _perform : (dist) -> dist()
+
+registerAttack 'random', true, -> new RandomAttack()
 
 exports.CharAttack = class CharAttack extends Attack
   edgeCases : -> ['', null]

@@ -11,6 +11,14 @@ awake 'Attacks', ->
   equipWith 'composedObjAttack', -> attack.object {an : 'anObject', value : 'aCustomValue', foo : 'string'}
   equipWith 'aConstant', -> attack.constant 42
   equipWith 'fooInstance', -> attack.instance Foo, 'int', 'string'
+  equipWith 'limitedNumbers', ->
+    attack.object
+      int : -> attack.int 10
+      pInt : -> attack.pInt 10
+      nInt : -> attack.nInt 10
+      decimal : -> attack.decimal 10
+      pDecimal : -> attack.pDecimal 10
+      nDecimal : -> attack.nDecimal 10
 
   rampage 'on decimal', (decimal) -> typeof decimal == 'number'
   rampage 'on positive decimal', (pDecimal) -> typeof pDecimal == 'number' && pDecimal >= 0
@@ -18,11 +26,28 @@ awake 'Attacks', ->
   rampage 'on integer', (int) -> typeof int == 'number' && (int | 0) - int == 0
   rampage 'on positive integer', (pInt) -> typeof pInt == 'number' && (pInt | 0) - pInt == 0 && pInt >= 0
   rampage 'on negative interger', (nInt) -> typeof nInt == 'number' && (nInt | 0) - nInt == 0 && nInt <= 0
-  rampage 'on boolean', (bool) -> bool == true || bool == false
-  rampage 'on sign', (sign) -> sign == -1 || sign == 1
+  rampage 'on positive decimal being greater than 0', hoping.sometimes((v) -> v > 0), (pDecimal) -> pDecimal
+  rampage 'on negative decimal being less than 0', hoping.sometimes((v) -> v < 0), (nDecimal) -> nDecimal
+  rampage 'on positive int being greater than 0', hoping.sometimes((v) -> v > 0), (pInt) -> pInt
+  rampage 'on negative int being less than 0', hoping.sometimes((v) -> v < 0), (nInt) -> nInt
+  rampage 'on number limiting', (limitedNumbers) ->
+    return true if limitedNumbers == null
+    limitedNumbers.int >= -10 && limitedNumbers.int <= 10 &&
+    limitedNumbers.pInt >= 0 && limitedNumbers.pInt <= 10 &&
+    limitedNumbers.nInt >= -10 && limitedNumbers.nInt <= 0 &&
+    limitedNumbers.decimal >= -10 && limitedNumbers.decimal <= 10 &&
+    limitedNumbers.pDecimal >= 0 && limitedNumbers.pDecimal <= 10 &&
+    limitedNumbers.nDecimal >= -10 && limitedNumbers.nDecimal <= 0
+
+  rampage 'on the random generator', (random) -> random >= 0 && random <= 1
+  rampage 'on boolean', hoping.sometimes(hoping.isTrue(), hoping.isFalse()), (bool) -> bool
+  rampage 'on sign', hoping.sometimes(((v) -> v == -1), ((v) -> v == 1)), (sign) -> sign
   rampage 'on char', (char) -> char == null || (typeof char == 'string' && (char.length == 0 || char.length == 1))
   rampage 'on string', (string) -> string == null || (typeof string == 'string')
   rampage 'on aCustomValue',  (aCustomValue) -> /^Call \d{0,3} for emergency$/.test aCustomValue
+
+
+
   rampage 'on pile of functions', (pileOfFn) ->
     return true if pileOfFn.fnName == 'pile'
     if pileOfFn.fnName == 'anyOf'
