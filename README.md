@@ -18,7 +18,7 @@ charRepeater = (char, length) -> (char for [1..length]).join ''
 ```
 Test is green! Deploy!  
 let the disaster happen: `charRepeater('a', 0)` ... gives `a` ?! but the test said its ok!  
-forgot this case:
+forgot the not so obvious case:
 ```coffeescript
 it 'should return a zero length string when given length is 0', ->
   generated = charRepeater('c', 0)

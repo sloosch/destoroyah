@@ -4,25 +4,42 @@ constants = require './const'
 exports.attacks = attackRegistry = {pileOf : {}}
 
 exports.registerAttack = registerAttack = (attackName, pile, constr) ->
-  attackRegistry[attackName] = -> constr.apply null, arguments
+  attackRegistry[attackName] = -> constr arguments...
   if pile
-    attackRegistry.pileOf[attackName] = -> new PileOfAttack(attackRegistry[attackName].apply null, arguments)
+    attackRegistry.pileOf[attackName] = -> new PileOfAttack(attackRegistry[attackName] arguments...)
 exports.unregisterAttack = unregisterAttack = (attackName) ->
   delete attackRegistry[attackName]
   delete attackRegistry.pileOf[attackName]
 
+exports.resolveAttack = resolveAttack = (attackName) ->
+  if 'function' == typeof attackName
+    attack = attackName()
+  else
+    throw new Error('Couldn\'t find attack "' + attackName + '"') unless attackName of attackRegistry
+    attack = attackRegistry[attackName]()
+  throw new Error(attack + ' is not an attack') unless attack instanceof Attack
+  attack
+
 exports.Attack = class Attack
-  constructor : (@args...) -> @_init.apply @, args
+  constructor : (@args...) -> @_init args...
   execute : (dist) ->
     @_prepare()
     args = (arg for arg in @args)
     args.unshift(dist || null)
-    @_perform.apply @, args
+    @_perform args...
   _prepare : ->
   _init : ->
   cases : -> undefined
   edgeCases : -> throw new Error(@ + ' doesn\'t provide any edge cases.')
   _perform : (dist) -> throw new Error('Perform not implemented for attack ' + @)
+
+exports.ConstantAttack = class ConstantAttack extends Attack
+  _init : (@value) ->
+  edgeCases : -> []
+  cases : -> [@value]
+  _perform : -> @value
+
+registerAttack 'constant', true, (value) -> new ConstantAttack(value)
 
 exports.BoolAttack = class BoolAttack extends Attack
   edgeCases : -> [true, false]
@@ -53,7 +70,9 @@ registerAttack 'nDecimal', true, -> new NDecimalAttack()
 
 exports.DecimalAttack = class DecimalAttack extends PDecimalAttack
   edgeCases : -> [-Math.sqrt(2), 0, Math.sqrt(2)]
-  _init : -> @sign = new SignAttack()
+  _init : ->
+    super arguments...
+    @sign = new SignAttack()
   _perform : (dist) ->
     @sign.execute(field.even) * super(dist)
 
@@ -97,14 +116,7 @@ exports.ObjectAttack = class ObjectAttack extends Attack
   _perform : (dist, example) ->
     obj = {}
     for k, v of example
-      attack = null
-      if typeof v == 'function'
-        attack = v()
-      else
-        throw new Error('Couldn\'t find ' + v + ' attack for key ' + k) unless v of attackRegistry
-        attack = attackRegistry[v]()
-      throw new Error(v + ' for key ' + k ' is not an attack') unless attack instanceof Attack
-      obj[k] = attack.execute dist
+      obj[k] = resolveAttack(v).execute(dist)
     obj
 
 registerAttack 'object', true, (example) -> new ObjectAttack(example)
@@ -131,3 +143,11 @@ exports.FunctionAttack = class FunctionAttack extends Attack
   _perform : (dist) -> @fn dist
 
 registerAttack 'fn', true, (fn, edges) -> new FunctionAttack(fn, edges)
+
+exports.InstanceAttack = class InstanceAttack extends Attack
+  edgeCases : -> [null]
+  _perform : (dist, constr, args) ->
+    constrArgs = if args then args.map (e) -> resolveAttack(e).execute(dist) else []
+    new constr(constrArgs...)
+
+registerAttack 'instance', true, (constr, args...) -> new InstanceAttack(constr, args)
