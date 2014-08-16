@@ -14,6 +14,8 @@ exports.unregisterAttack = unregisterAttack = (attackName) ->
 exports.resolveAttack = resolveAttack = (attackName) ->
   if 'function' == typeof attackName
     attack = attackName()
+  else if attackName instanceof Attack
+    attack = attackName
   else
     throw new Error('Couldn\'t find attack "' + attackName + '"') unless attackName of attackRegistry
     attack = attackRegistry[attackName]()
@@ -155,12 +157,28 @@ exports.PileOfAttack = class PileOfAttack extends Attack
 
 registerAttack 'pile', true, (innerAttack) -> new PileOfAttack(innerAttack)
 
-exports.FunctionAttack = class FunctionAttack extends Attack
+exports.CallbackAttack = class CallbackAttack extends Attack
   _init : (@fn, @edges = []) ->
   edgeCases : -> @edges
   _perform : (dist) -> @fn dist
 
-registerAttack 'fn', true, (fn, edges) -> new FunctionAttack(fn, edges)
+registerAttack 'cb', true, (fn, edges) -> new CallbackAttack(fn, edges)
+
+exports.FunctionAttack = class FunctionAttack extends Attack
+  _init : (returningAttack) ->
+    @attack = resolveAttack returningAttack
+  _createFn : (returnVal) -> -> returnVal
+  edgeCases : ->
+    edgeCases = @attack.edgeCases()
+    if edgeCases
+      edgeCases.map (c) => @_createFn c
+  cases : ->
+    cases = @attack.cases()
+    if cases
+      cases.map (c) =>  @_createFn c
+  _perform : (dist) -> @_createFn @attack.execute(dist)
+
+registerAttack 'fn', true, (returningAttack) -> new FunctionAttack(returningAttack)
 
 exports.InstanceAttack = class InstanceAttack extends Attack
   edgeCases : -> [null]

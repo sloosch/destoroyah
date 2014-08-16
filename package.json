@@ -1,6 +1,6 @@
 {
   "name": "destoroyah",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment",
   "main": "lib/destoroyah",
   "browser": "lib/destoroyah/web/destoroyah.js",
@@ -8,7 +8,8 @@
     "destoroyah": "./bin/destoroyah"
   },
   "scripts": {
-    "test": "gulp; node ./bin/destoroyah ./disasters/*Zil.coffee"
+    "test": "gulp; node ./bin/destoroyah ./disasters/*Zil.coffee",
+    "prepublish" : "gulp"
   },
   "keywords": [
     "destoroyah",
