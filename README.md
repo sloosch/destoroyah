@@ -63,7 +63,8 @@ No this is no joke, it is a fully working simple to use QuickCheck testing libra
 - awake = describe
 - rampage = it
 - hope = expect
-- monster = specification
+- disaster = specification
+- monster = test suite
 - attacks = generated arguments you use for your function
 - angryness = maximum number of test cases
 
