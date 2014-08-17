@@ -49,14 +49,28 @@ A quickcheck framework knows these edge cases and tests them.
 Even further it generates hundreds of test cases for you.
 The function will by tested with all possible cases - not just the ones we thought about.
 
+###Disasters
+Write your **disasters** according to the [introduction](https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee)
+You may want to consider using coffee-script to keep your disasters as clean as possible.
+
+#####Why those names? "awake", "rampage", "angryness", "attack", "hope"....
+Because writing tests should be fun!  
+"A monster is going on a rampage on your functions by attacking it with arguments.
+You can just sit there and hope that your function withstands these attacks."
+No this is no joke, it is a fully working simple to use QuickCheck testing library.
+
+#####I don't like these childish names! How do they translate to my beloved BDD?
+- awake = describe
+- rampage = it
+- hope = expect
+- monster = specification
+- attacks = generated arguments you use for your function
+- angryness = maximum number of test cases
 
 ###Install
 
 `npm install -g destoroyah`
 
-###Disasters
-Write your **disasters** according to the [introduction](https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee)
-You may want to consider using coffee-script to keep your disasters as clean as possible.
 
 ###Can i win the Fields Medal?
 Yes you can [BhargavaZil](https://github.com/sloosch/destoroyah/blob/master/disasters/BhargavaZil.coffee)!
