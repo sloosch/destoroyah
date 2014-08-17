@@ -42,6 +42,14 @@ charRepeater = (char, length) ->
   (char for [1..length]).join ''
 ```
 
+###Why you should care?
+Because whether you not me can think of all possibilities that can happen to your functions.
+Bad arguments like NULL, an empty string, empty array... in combination with good arguments.
+A quickcheck framework knows these edge cases and tests them.
+Even further it generates hundreds of test cases for you.
+The function will by tested with all possible cases - not just the ones we thought about.
+
+
 ###Install
 
 `npm install -g destoroyah`
