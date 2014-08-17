@@ -7,14 +7,6 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-    <script type="text/javascript">
-      var _paq = _paq || [];
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      _paq.push(['setTrackerUrl', 'http://sloosch.de/piwik/piwik.php']);
-      _paq.push(['setSiteId', 1]);
-    </script>
-    <script src="http://sloosch.de/piwik/piwik.js" async="true"></script>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -107,15 +99,33 @@ Even further it generates hundreds of test cases for you.
 The function will by tested with all possible cases - not just the ones we thought about.</p>
 
 <h3>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h3>
-
-<p><code>npm install -g destoroyah</code></p>
-
-<h3>
 <a name="disasters" class="anchor" href="#disasters"><span class="octicon octicon-link"></span></a>Disasters</h3>
 
 <p>Write your <strong>disasters</strong> according to the <a href="https://github.com/sloosch/destoroyah/blob/master/introduction.litcoffee">introduction</a>
 You may want to consider using coffee-script to keep your disasters as clean as possible.</p>
+
+<h5>
+<a name="why-those-names-awake-rampage-angryness-attack-hope" class="anchor" href="#why-those-names-awake-rampage-angryness-attack-hope"><span class="octicon octicon-link"></span></a>Why those names? "awake", "rampage", "angryness", "attack", "hope"....</h5>
+
+<p>Because writing tests should be fun!<br>
+"A monster is going on a rampage on your functions by attacking it with arguments.
+You can just sit there and hope that your function withstands these attacks."
+No this is no joke, it is a fully working simple to use QuickCheck testing library.</p>
+
+<h5>
+<a name="i-dont-like-these-childish-names-how-do-they-translate-to-my-beloved-bdd" class="anchor" href="#i-dont-like-these-childish-names-how-do-they-translate-to-my-beloved-bdd"><span class="octicon octicon-link"></span></a>I don't like these childish names! How do they translate to my beloved BDD?</h5>
+
+<ul>
+<li>awake = describe</li>
+<li>rampage = it</li>
+<li>hope = expect</li>
+<li>monster = specification</li>
+<li>attacks = generated arguments you use for your function</li>
+<li>angryness = maximum number of test cases</li>
+</ul><h3>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h3>
+
+<p><code>npm install -g destoroyah</code></p>
 
 <h3>
 <a name="can-i-win-the-fields-medal" class="anchor" href="#can-i-win-the-fields-medal"><span class="octicon octicon-link"></span></a>Can i win the Fields Medal?</h3>
