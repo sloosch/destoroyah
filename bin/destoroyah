@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var DestoroyahRunner, defaultExtensions, disasterFiles, failed, gaze, glob, list, path, pkg, program, run, toWatch, wd;
+var DestoroyahRunner, defaultExtensions, disasterFiles, gaze, glob, lastRun, list, path, pkg, program, run, runQueue, toWatch, util, waiting, wd;
 
 DestoroyahRunner = require('./../lib/runner/default');
 
@@ -8,6 +8,8 @@ gaze = require('gaze');
 glob = require('glob');
 
 path = require('path');
+
+util = require('./../lib/destoroyah/util');
 
 program = require('commander');
 
@@ -29,6 +31,8 @@ if (disasterFiles.length === 0) {
   disasterFiles = ['disasters/*'];
 }
 
+lastRun = null;
+
 run = function() {
   var files, runner;
   files = disasterFiles.reduce((function(acc, g) {
@@ -37,10 +41,11 @@ run = function() {
     return path.resolve(e);
   });
   runner = new DestoroyahRunner(files);
-  return runner.run();
+  return lastRun = runner.run();
 };
 
 if (program.watch != null) {
+  runQueue = [];
   wd = program.watchDirectory != null ? program.watchDirectory : [process.cwd()];
   defaultExtensions = ['js', 'coffee'];
   if (program.watchExtension != null) {
@@ -53,21 +58,37 @@ if (program.watch != null) {
     }));
     return toWatch.push('!' + dir + '/node_modules/**');
   });
+  waiting = false;
   gaze(toWatch, function(err, watcher) {
     if (err) {
       console.error(err);
       process.exit(1);
     }
     return this.on('all', function(event, filepath) {
-      console.log(event + ' ' + filepath);
-      delete require.cache[filepath];
-      return run();
+      runQueue.push({
+        event: event,
+        filepath: filepath
+      });
+      if (!waiting) {
+        waiting = true;
+        return util["finally"](lastRun, function() {
+          var ev, _i, _len;
+          for (_i = 0, _len = runQueue.length; _i < _len; _i++) {
+            ev = runQueue[_i];
+            console.log(ev.event + ' ' + ev.filepath);
+            delete require.cache[ev.filepath];
+          }
+          runQueue = [];
+          waiting = false;
+          return run();
+        });
+      }
     });
   });
 }
 
-failed = run();
-
-if ((program.watch == null) && failed) {
-  process.exit(1);
-}
+util["finally"](run(), function(broken) {
+  if (broken && (program.watch == null)) {
+    return process.exit(1);
+  }
+});

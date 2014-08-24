@@ -2,6 +2,7 @@ DestoroyahRunner = require './../lib/runner/default'
 gaze = require 'gaze'
 glob = require 'glob'
 path = require 'path'
+util = require './../lib/destoroyah/util'
 program = require 'commander'
 pkg = require './../package.json'
 
@@ -25,14 +26,16 @@ program
 disasterFiles = program.args
 disasterFiles = ['disasters/*'] if disasterFiles.length == 0
 
+lastRun = null
 run = ->
   files = disasterFiles
   .reduce ((acc, g) -> acc.concat glob.sync g), []
   .map (e) -> path.resolve e
   runner = new DestoroyahRunner(files)
-  runner.run()
+  lastRun = runner.run()
 
 if program.watch?
+  runQueue = []
   wd = if program.watchDirectory? then program.watchDirectory else [process.cwd()]
   defaultExtensions = ['js', 'coffee']
   if program.watchExtension?
@@ -43,14 +46,22 @@ if program.watch?
     toWatch = toWatch.concat defaultExtensions.map (e) -> dir + '/**/*.' + e
     toWatch.push '!' + dir + '/node_modules/**'
 
+  waiting = false
   gaze toWatch, (err, watcher) ->
     if err
       console.error err
       process.exit 1
     @.on 'all', (event, filepath) ->
-      console.log event + ' ' + filepath
-      delete require.cache[filepath]
-      run()
+      runQueue.push event : event, filepath : filepath
+      unless waiting
+        waiting = true
+        util.finally lastRun, ->
+          for ev in runQueue
+            console.log ev.event + ' ' + ev.filepath
+            delete require.cache[ev.filepath]
+          runQueue = []
+          waiting = false
+          run()
 
-failed = run()
-process.exit(1) if not program.watch? && failed
+util.finally run(), (broken) ->
+  process.exit(1) if broken && not program.watch?

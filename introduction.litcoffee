@@ -1,3 +1,5 @@
+###Basics
+
 **awake** a monster of choice going on a rampage on your functions
 
 Here we've named the creature 'evil monster' with an **angryness** of 123 (when omitted, defaults to 100)
@@ -29,6 +31,7 @@ the rampage will end when _quux_ doesn't return a defined value
 
 There are many more predefined **hopes** - take a look at the **HopeZil** disaster.
 
+###Adding own attacks
 
 Equip the monster with some special attacks
 
@@ -95,6 +98,7 @@ attacks with infinity possibilities will stop when the monster calms down
 
 _quux_ is attacked **angryness** times because a decimal number has an infinity number of cases
 
+###Before and After
 
 do some setup when destoroyah awakes
 
@@ -111,3 +115,32 @@ you may like to setup something before each rampage
 or after each rampage
 
     afterRampage -> resetSomething()
+
+###Focus
+
+set the focus on one rampage
+
+    rrampage 'on only this one will be executed', -> quux()
+
+or skip a rampage
+
+    xrampage 'on will never run', -> foo()
+
+may never awake a whole suite
+
+    xawake 'Always Sleeping', ->
+      rampage 'never seen', -> foo()
+      rampage 'never executed', -> quux()
+
+or just awake one
+
+    aawake 'Just This One', ->
+      rampage 'on something', -> foo()
+
+###Promises
+wait for an asynchron event to happen via ES6 promises
+
+    rampage 'on that promise', hoping.isEqual('foo'), -> new destoroyah.Promise (resolve, reject) ->
+      asyncStuff (result)-> resolve(result)
+
+`destoroyah.Promise` is either the native ES6 promise or a compatible polyfill

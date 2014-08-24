@@ -6,6 +6,7 @@ util = require './util'
 field = fieldModule
 attack = attackModule.attacks
 hoping = hopingModule.hopes
+Promise = require './promise'
 
 ###
   Globals
@@ -15,6 +16,7 @@ module.exports = destoroyah =
   attack : attack
   hoping : hoping
   constants : constants
+  Promise : Promise
   modules :
     field : fieldModule
     attack : attackModule
@@ -61,14 +63,25 @@ class BitterStruggle extends MonsterEventEmitter
     @detach.push monster.through 'defended', @
     @detach.push monster.through 'defeated', @
     @monsters.push monster
+    monster
+  _runEachMonster : ->
+    new Promise (resolve, reject) =>
+      hasBrokenThrough = false
+      runOn = @monsters
+      onlyMonsters = runOn.filter (m) -> m.only
+      if onlyMonsters.length > 0
+        runOn = onlyMonsters
+      runOn = runOn.filter (m) -> !m.skip
+      util.cbForEach runOn, (monster, next) =>
+        @activeMonster = monster
+        monster.awake().then (broken) ->
+          hasBrokenThrough ||= broken
+          resolve(hasBrokenThrough) unless next()
+        , reject
+      return
   fight : ->
     @_fireEvent 'start'
-    try
-      for monster in @monsters
-        @activeMonster = monster
-        monster.awake()
-    finally
-      @_fireEvent 'end'
+    util.finally @_runEachMonster(), => @_fireEvent 'end'
   surrender : ->
     f() for f in @detach
     @detach = []
@@ -85,6 +98,8 @@ class Destoroyah extends MonsterEventEmitter
     f() for f in @detach if @detach?
     @detach = []
   constructor : (@reason, @angryness, @setup) ->
+    @only = false
+    @skip = false
     @reset()
     super()
   addRampage : (rampage) ->
@@ -93,28 +108,47 @@ class Destoroyah extends MonsterEventEmitter
       @detach.push rampage.through 'defeated', @
       @rampages.push rampage
     return
+  _runEachRampage : ->
+    new Promise (resolve, reject) =>
+      hasBrokenThrough = false
+      runOn = @rampages
+      onlyRampages = runOn.filter (r) -> r.only
+      if onlyRampages.length > 0
+        runOn = onlyRampages
+      runOn = runOn.filter (r) -> !r.skip
+      util.cbForEach runOn, (rampage, next) =>
+        @_fireEvent 'start rampage', rampage
+        rampage.start(@angryness)
+        .then (res) =>
+          hasBrokenThrough ||= res.failed
+          @_fireEvent 'end rampage', rampage, res
+          resolve(hasBrokenThrough) unless next()
+        .catch (e) =>
+          hasBrokenThrough = true
+          @_fireEvent 'error rampage', rampage, e
+          reject(e)
+      return
   awake : ->
     @reset()
     @setup()
     @_fireEvent 'start'
-    res = null
-    try
-      for rampage in @rampages
-        @_fireEvent 'start rampage', rampage
-        try
-          res = rampage.punch @angryness
-          @_fireEvent 'end rampage', rampage, res
-        catch error
-          @_fireEvent 'error rampage', rampage, error
-    finally
-      @_fireEvent 'end'
-    return
+    util.finally @_runEachRampage(), => @_fireEvent 'end'
 
 destoroyah.awake = (reason, angryness, setup) ->
   if not setup?
     setup = angryness
     angryness = 100
   destoroyah.bitterStruggle.addMonster new Destoroyah(reason, angryness, setup)
+
+destoroyah.aawake = (reason, angryness, setup) ->
+  monster = destoroyah.awake arguments...
+  monster.only = true
+  monster
+
+destoroyah.xawake = (reason, angryness, setup) ->
+  monster = destoroyah.awake arguments...
+  monster.skip = true
+  monster
 
 ###
   Rampage
@@ -123,23 +157,32 @@ class Rampage extends MonsterEventEmitter
   @_lastId = 0
   constructor : (@reason, @hope, @f, @field) ->
     @id = Rampage._lastId++
+    @result = null
+    @only = false
+    @skip = false
     super()
-  _attackWith: (att, angryness) -> destoroyah.forAll @f, att, @hope, @field, angryness
-  attacks : ->
-    return [] unless fnParams = @f.toString().match(/function\s*?\((.+)\)/)
-    attackNames =fnParams[1].split ','
-    attackNames.map (genName) =>
-      [attackName] = genName.split '_'
-      attackName = attackName.trim()
+  _attackNames : ->
+    return [] unless fnParams = @f.toString().match(/^function\s*?\((.+)\)/)
+    attackNames = fnParams[1].split ','
+    attackNames.map (name) ->
+      [attackName] = name.split '_'
+      attackName.trim()
+  _attacks : (names) ->
+    return [] if names.length == 0
+    names.map (attackName) =>
       return attack[attackName]() if attackName of attack
       throw new Error('Attack "' + attackName + '" not found for rampage ' + @reason + ', not equipped?')
-  punch : (angryness) ->
-    res = @_attackWith @attacks(), angryness
-    if res.failed
-      @_fireEvent 'defeated', res
-    else
-      @_fireEvent 'defended', res
-    res
+  start : (angryness) ->
+    @result = null
+    attacksUsed = @_attackNames()
+    destoroyah.forAll(@f, @_attacks(attacksUsed), @hope, @field, angryness)
+    .then (res) =>
+      @result = res
+      if res.failed
+        @_fireEvent 'defeated', res
+      else
+        @_fireEvent 'defended', res
+      res
 
 destoroyah.rampage = (reason, hope, f) ->
   if !f
@@ -148,6 +191,15 @@ destoroyah.rampage = (reason, hope, f) ->
   r = new Rampage(reason, hope, f, destoroyah.field.even)
   destoroyah.bitterStruggle.activeMonster.addRampage r
   r
+destoroyah.rrampage = (reason, hope, f) ->
+  rampage = destoroyah.rampage arguments...
+  rampage.only = true
+  rampage
+
+destoroyah.xrampage = (reasion, hope, f) ->
+  rampage = destoroyah.rampage arguments...
+  rampage.skip = true
+  rampage
 
 ###
   Setup
@@ -173,12 +225,17 @@ destoroyah.whenCalm = (f) ->
 ###
 
 destoroyah.fulfillsHope = (func, args, hope) ->
-  try
-    hope(func.apply(null, args)) != false #returning none booleans is OK
-  catch error
-    error.__destoroyah = args
-    throw error
-
+  new Promise (resolve, reject) ->
+    try
+      funcRes = func args...
+      if funcRes instanceof Promise
+        funcRes.then ((res) -> resolve(hope(res) != false)), -> reject arguments...
+      else
+        resolve(hope(funcRes) != false)
+    catch error
+      error.__destoroyah = args
+      reject(error)
+    return
 
 destoroyah.combo = (possibilities) ->
   acc = []
@@ -198,36 +255,70 @@ class DestoroyahResult
   constructor : (@failed, @angryness, @combos, @lastArguments, startTime) ->
     @time = new Date().getTime() - startTime
 
-destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
-  startTime = new Date().getTime()
-  if thisAttacks.length > 0
-    #consider the edge cases first
-    edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
-    combos = destoroyah.combo edgeCases
-    for comboArgs in combos
-      unless destoroyah.fulfillsHope func, comboArgs, hope
-        return new DestoroyahResult(true, angryness, combos.length, comboArgs, startTime)
-
-    #reduce the amount of test runs when we are able to run all possible cases with the given angryness
-    allCases = thisAttacks.map (e) -> e.cases()
-    complexity = if allCases.length > 0 then allCases.reduce ((acc, e) -> if !e then Infinity else acc * e.length), 1 else 0
-    if complexity <= angryness
-      angryness = complexity
-      caseCombos = destoroyah.combo allCases
-      for caseCombo in caseCombos
-        unless destoroyah.fulfillsHope func, caseCombo, hope
-          return new DestoroyahResult(true, angryness, combos.length, caseCombo, startTime)
+class TestRun
+  constructor : (@func, @thisAttacks, @hope, @field, @angryness) ->
+    @lastArguments = []
+    if thisAttacks.length > 0
+      @edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
+      @combos = destoroyah.combo @edgeCases
+      @allCases = thisAttacks.map (e) -> e.cases()
+      @complexity = if @allCases.length > 0 then @allCases.reduce ((acc, e) -> if !e then Infinity else acc * e.length), 1 else 0
     else
-      #randomly attack the function
-      for [1..angryness]
-        args = thisAttacks.map (a) -> a.execute field
-        unless destoroyah.fulfillsHope func, args, hope
-          return new DestoroyahResult(true, angryness, combos.length, args, startTime)
-  else
-    angryness = 1
-    combos = []
-    unless destoroyah.fulfillsHope func, [], hope
-      return new DestoroyahResult(true, angryness, 0, [], startTime)
+      @edgeCases = []
+      @angryness = 1
+      @combos = []
+      @complexity = 0
+      @allCases = []
+  runEdgeCases : ->
+    new Promise (resolve, reject) =>
+      if @edgeCases.length > 0
+        #consider the edge cases first
+        util.cbForEach @combos, (comboArgs, next) =>
+          @lastArguments = comboArgs
+          destoroyah.fulfillsHope(@func, comboArgs, @hope)
+          .then util.either((-> resolve() unless next()), reject), reject
+      else
+        resolve()
+      return
+  runNoneDeterministicCases : ->
+    new Promise (resolve, reject) =>
+      if @complexity == 0 || @angryness == 0
+        @lastArguments = []
+        destoroyah.fulfillsHope(@func, [], @hope)
+        .then util.either(resolve, reject), reject
+      else if @complexity <= @angryness
+        #reduce the amount of test runs when we are able to run all possible cases with the given angryness
+        @angryness = @complexity
+        caseCombos = destoroyah.combo @allCases
+        util.cbForEach caseCombos, (caseCombo, next) =>
+          @lastArguments = caseCombo
+          destoroyah.fulfillsHope(@func, caseCombo, @hope)
+          .then util.either((-> resolve() unless next()), reject), reject
+      else
+        #randomly attack the function
+        util.cbFor 1, @angryness, (index, next) =>
+          args = @thisAttacks.map (a) => a.execute @field
+          @lastArguments = args
+          destoroyah.fulfillsHope(@func, args, @hope)
+          .then util.either((-> resolve() unless next()), reject), reject
+      return
+  runAll : ->
+    startTime = new Date().getTime()
+    new Promise (resolve, reject) =>
+      resolveCurrentState = (failed) =>
+        resolve new DestoroyahResult(failed, @angryness, @combos.length, @lastArguments, startTime)
 
-  failed = if 'finally' of hope then hope.finally() == false else false
-  new DestoroyahResult(failed, angryness, combos.length, [], startTime)
+      @runEdgeCases()
+      .then => @runNoneDeterministicCases()
+      .then =>
+        failed = if 'finally' of @hope then @hope.finally() == false else false
+        resolveCurrentState failed
+      .catch (e) ->
+        if e?
+          reject e
+        else
+          resolveCurrentState true
+      return
+
+destoroyah.forAll = (func, thisAttacks, hope, field, angryness) ->
+  new TestRun(func, thisAttacks, hope, field, angryness).runAll()

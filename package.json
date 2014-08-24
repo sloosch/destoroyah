@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "gulp; node ./bin/destoroyah ./disasters/*Zil.coffee",
-    "prepublish" : "gulp"
+    "prepublish": "gulp"
   },
   "keywords": [
     "destoroyah",
@@ -42,6 +42,7 @@
   "dependencies": {
     "chalk": "^0.5.1",
     "commander": "^2.3.0",
+    "es6-promise": "^1.0.0",
     "gaze": "^0.6.4",
     "glob": "^4.0.5",
     "log-symbols": "^1.0.0"

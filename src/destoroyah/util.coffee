@@ -10,3 +10,24 @@ exports.argFormat = (args) ->
         when 'boolean' then (if arg == true then '<TRUE>' else '<FALSE>')
         when 'object' then JSON.stringify(arg)
   if str.length > 0 then str.join ', ' else '<no arguments>'
+
+exports.cbForEach = cbForEach = (items, cb, startIndex = 0) ->
+  if startIndex > (items.length - 1)
+    false
+  else
+    setImmediate cb, items[startIndex], (-> cbForEach items, cb, startIndex + 1)
+    true
+
+exports.cbFor = cbFor = (start, end, cb) ->
+  if start > end
+    false
+  else
+    setImmediate cb, start, (-> cbFor start + 1, end, cb)
+    true
+
+exports.either = (left, right) -> (useLeft) ->
+  if useLeft then left() else right()
+
+
+exports.finally = (promise, final) ->
+  promise.then final, final
