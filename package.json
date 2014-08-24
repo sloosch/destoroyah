@@ -1,6 +1,6 @@
 {
   "name": "destoroyah",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment",
   "main": "lib/destoroyah",
   "browser": "lib/destoroyah/web/destoroyah.js",
