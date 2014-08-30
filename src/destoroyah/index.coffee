@@ -1,7 +1,10 @@
 destoroyah = require './main'
+setup = require './setup'
+EXPOSE = require('../destoroyah/const').EXPOSE
+
 module.exports = destoroyah
 if typeof window != 'undefined'
-  EXPOSE = require('./const').EXPOSE
   window.destoroyah = destoroyah
-  EXPOSE.forEach (propName) ->
-    window[propName] = destoroyah[propName]
+  setup.extend 'monster', window
+  setup.extend 'struggle', window
+  EXPOSE.forEach (propName) -> window[propName] = destoroyah[propName]

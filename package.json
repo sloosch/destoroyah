@@ -1,6 +1,6 @@
 {
   "name": "destoroyah",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "disastrous quickcheck-like testing framework - let the disaster happen during development, not after deployment",
   "main": "lib/destoroyah",
   "browser": "lib/destoroyah/web/destoroyah.js",
@@ -40,11 +40,13 @@
   },
   "homepage": "http://sloosch.github.io/destoroyah",
   "dependencies": {
+    "asap": "^1.0.0",
     "chalk": "^0.5.1",
     "commander": "^2.3.0",
     "es6-promise": "^1.0.0",
     "gaze": "^0.6.4",
     "glob": "^4.0.5",
-    "log-symbols": "^1.0.0"
+    "log-symbols": "^1.0.0",
+    "setimmediate": "^1.0.2"
   }
 }

@@ -1,3 +1,5 @@
+require 'setimmediate'
+
 exports.argFormat = (args) ->
   str = []
   for arg in args
@@ -31,3 +33,17 @@ exports.either = (left, right) -> (useLeft) ->
 
 exports.finally = (promise, final) ->
   promise.then final, final
+
+exports.combo = (possibilities) ->
+  acc = []
+  return acc if possibilities.length == 0
+  acc = ([w] for w in possibilities[0])
+
+  return acc if possibilities.length == 1
+  for choices in [1..possibilities.length - 1]
+    i = []
+    for aCase in possibilities[choices]
+      for z in acc
+        i.push z.concat [aCase]
+    acc = i
+  acc

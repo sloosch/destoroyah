@@ -1,3 +1,5 @@
+Promise = require './promise'
+
 exports.hopes = hopeRegistry = {not : (f) -> (v) -> not f v}
 exports.registerHope = registerHope = (hopeName, notable = true, f) ->
   hopeRegistry[hopeName] = -> f arguments...
@@ -48,3 +50,16 @@ that = (guard = -> true) ->
     f
 
 registerHope 'that', false, that
+
+
+exports.fulfillsHope = (func, args, hope) -> new Promise (resolve, reject) ->
+  try
+    funcRes = func args...
+    if funcRes instanceof Promise
+      funcRes.then ((res) -> resolve(hope(res) != false)), -> reject arguments...
+    else
+      resolve(hope(funcRes) != false)
+  catch error
+    error.__destoroyah = args
+    reject(error)
+  return

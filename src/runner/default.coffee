@@ -1,15 +1,19 @@
 destoroyah = require './../destoroyah/main'
 survivor = require './../reporter/survivor'
 chalk = require 'chalk'
-EXPOSE = require('./../destoroyah/const').EXPOSE
-
+setup = require '../destoroyah/setup'
+EXPOSE = require('../destoroyah/const').EXPOSE
 module.exports = class DestoroyahRunner
   constructor : (@files) ->
   _exposeGlobals : ->
     global.destoroyah = destoroyah
+    setup.extend 'monster', global
+    setup.extend 'struggle', global
     EXPOSE.forEach (propName) -> global[propName] = destoroyah[propName]
   _hideGlobals : ->
     delete global.destoroyah
+    setup.dispose 'monster', global
+    setup.dispose 'struggle', global
     EXPOSE.forEach (propName) -> delete global[propName]
   _loadFiles : ->
     @files.forEach (file) -> require file
