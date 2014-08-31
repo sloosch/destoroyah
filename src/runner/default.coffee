@@ -7,11 +7,13 @@ module.exports = class DestoroyahRunner
   constructor : (@files) ->
   _exposeGlobals : ->
     global.destoroyah = destoroyah
+    setup.extend 'rampage', global
     setup.extend 'monster', global
     setup.extend 'struggle', global
     EXPOSE.forEach (propName) -> global[propName] = destoroyah[propName]
   _hideGlobals : ->
     delete global.destoroyah
+    setup.dispose 'rampage', global
     setup.dispose 'monster', global
     setup.dispose 'struggle', global
     EXPOSE.forEach (propName) -> delete global[propName]

@@ -22,7 +22,7 @@ exports.include = include = (context, name, fn) ->
       obj[name] = bindLaterFn
   bindLaterFn
 
-unbind = (context) -> if context of boundIncludeFn
+exports.unbind = unbind = (context) -> if context of boundIncludeFn
   for name, fn of boundIncludeFn[context]
     boundIncludeFn[context][name] = unboundFn context, name
   return
@@ -55,7 +55,8 @@ exports.dispose = (context, obj) ->
   return
 
 #run `fn` in the given context where the setup functions are bound to `obj`
-exports.execute = (context, obj, fn) ->
+exports.execute = (context, obj, fn, args) ->
   bindTo context, obj
-  fn()
+  res = fn args...
   unbind context
+  res

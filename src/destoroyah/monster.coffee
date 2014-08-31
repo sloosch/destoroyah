@@ -34,9 +34,9 @@ exports.Destoroyah = class Destoroyah extends MonsterEventEmitter
     hasBrokenThrough = false
     runOn = @rampages
     onlyRampages = runOn.filter (r) -> r.only
-    if onlyRampages.length > 0
-      runOn = onlyRampages
+    runOn = onlyRampages if onlyRampages.length > 0
     runOn = runOn.filter (r) -> !r.skip
+    resolve(false) if runOn.length == 0
     util.cbForEach runOn, (rampage, next) =>
       @_fireEvent 'start rampage', rampage
       rampage.start(@angryness)
@@ -56,24 +56,24 @@ exports.Destoroyah = class Destoroyah extends MonsterEventEmitter
     util.finally @_runEachRampage(), => @_fireEvent 'end'
 
 setup.include 'monster', 'equipWith', (forceName, f) ->
-  @.once 'start', -> attackModule.registerAttack forceName, true, f
-  @.once 'end', -> attackModule.unregisterAttack forceName
+  @once 'start', -> attackModule.registerAttack forceName, true, f
+  @once 'end', -> attackModule.unregisterAttack forceName
   return
 setup.include 'monster', 'beforeRampage', (f) ->
-  detach = @.on 'start rampage', f
-  @.once 'end', -> detach()
+  detach = @on 'start rampage', f
+  @once 'end', -> detach()
   return
 setup.include 'monster', 'afterRampage', (f) ->
   detach = []
-  detach.push @.on 'end rampage', f
-  detach.push @.on 'error rampage', f
-  @.once 'monster', 'end', -> d() for d in detach
+  detach.push @on 'end rampage', f
+  detach.push @on 'error rampage', f
+  @once 'monster', 'end', -> d() for d in detach
   return
 setup.include 'monster', 'whenAwake', (f) ->
-  @.once 'start', f
+  @once 'start', f
   return
 setup.include 'monster', 'whenCalm', (f) ->
-  @.once 'end', f
+  @once 'end', f
   return
 
 setupRampage = setup.include 'monster', 'rampage', (reason, hope, f) ->
@@ -81,7 +81,7 @@ setupRampage = setup.include 'monster', 'rampage', (reason, hope, f) ->
     f = hope
     hope = hoping.isTrue()
   r = new Rampage(reason, hope, f, field.even)
-  @.addRampage r
+  @addRampage r
   r
 
 setup.include 'monster', 'rrampage', (reason, hope, f) ->

@@ -32,9 +32,9 @@ class BitterStruggle extends MonsterEventEmitter
     hasBrokenThrough = false
     runOn = @monsters
     onlyMonsters = runOn.filter (m) -> m.only
-    if onlyMonsters.length > 0
-      runOn = onlyMonsters
+    runOn = onlyMonsters if onlyMonsters.length > 0
     runOn = runOn.filter (m) -> !m.skip
+    resolve(false) if runOn.length == 0
     util.cbForEach runOn, (monster, next) ->
       monster.awake().then (broken) ->
         hasBrokenThrough ||= broken
@@ -57,7 +57,7 @@ setupAwake = setup.include 'struggle', 'awake', (reason, angryness, setup) ->
   if not setup?
     setup = angryness
     angryness = DEFAULT_ANGRYNESS
-  @.addMonster new Destoroyah(reason, angryness, setup)
+  @addMonster new Destoroyah(reason, angryness, setup)
 
 setup.include 'struggle', 'aawake', (reason, angryness, setup) ->
   monster = setupAwake arguments...
