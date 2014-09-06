@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var DestoroyahRunner, defaultExtensions, disasterFiles, gaze, glob, lastRun, list, path, pkg, program, run, runQueue, toWatch, util, waiting, wd;
+var DestoroyahRunner, chalk, defaultExtensions, disasterFiles, gaze, glob, lastRun, list, path, pkg, program, run, runQueue, toWatch, util, waiting, wd;
 
 DestoroyahRunner = require('./../lib/runner/default');
 
@@ -14,6 +14,8 @@ util = require('./../lib/destoroyah/util');
 program = require('commander');
 
 pkg = require('./../package.json');
+
+chalk = require('chalk');
 
 try {
   require('coffee-script').register();
@@ -41,7 +43,9 @@ run = function() {
     return path.resolve(e);
   });
   runner = new DestoroyahRunner(files);
-  return lastRun = runner.run();
+  return lastRun = runner.run()["catch"](function(e) {
+    return console.error(chalk.red('ERROR: ' + e));
+  });
 };
 
 if (program.watch != null) {

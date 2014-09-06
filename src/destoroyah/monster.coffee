@@ -38,22 +38,25 @@ exports.Destoroyah = class Destoroyah extends MonsterEventEmitter
     runOn = runOn.filter (r) -> !r.skip
     resolve(false) if runOn.length == 0
     util.cbForEach runOn, (rampage, next) =>
-      @_fireEvent 'start rampage', rampage
-      rampage.start(@angryness)
+      @_fireEvent('start rampage', rampage)
+      .then => rampage.start(@angryness)
       .then (res) =>
         hasBrokenThrough ||= res.failed
-        @_fireEvent 'end rampage', rampage, res
-        resolve(hasBrokenThrough) unless next()
+        @_fireEvent('end rampage', rampage, res)
+        .then -> resolve(hasBrokenThrough) unless next()
       .catch (e) =>
         hasBrokenThrough = true
-        @_fireEvent 'error rampage', rampage, e
-        reject(e)
+        @_fireEvent('error rampage', rampage, e)
+        .then -> reject e
+        .catch reject
     return
   #runs each rampage
   #returns a promise
   awake : ->
-    @_fireEvent 'start'
-    util.finally @_runEachRampage(), => @_fireEvent 'end'
+    end = => (res) => new Promise (resolveEnd, rejectEnd) => @_fireEvent('end').then((-> resolveEnd res), rejectEnd)
+    @_fireEvent('start')
+    .then => @_runEachRampage()
+    .then end()
 
 setup.include 'monster', 'equipWith', (forceName, f) ->
   @once 'start', -> attackModule.registerAttack forceName, true, f

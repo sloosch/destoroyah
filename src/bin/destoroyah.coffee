@@ -5,6 +5,7 @@ path = require 'path'
 util = require './../lib/destoroyah/util'
 program = require 'commander'
 pkg = require './../package.json'
+chalk = require 'chalk'
 
 try
   require('coffee-script').register()
@@ -32,7 +33,7 @@ run = ->
   .reduce ((acc, g) -> acc.concat glob.sync g), []
   .map (e) -> path.resolve e
   runner = new DestoroyahRunner(files)
-  lastRun = runner.run()
+  lastRun = runner.run().catch((e) -> console.error chalk.red 'ERROR: ' + e)
 
 if program.watch?
   runQueue = []

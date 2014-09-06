@@ -3,6 +3,7 @@ survivor = require './../reporter/survivor'
 chalk = require 'chalk'
 setup = require '../destoroyah/setup'
 EXPOSE = require('../destoroyah/const').EXPOSE
+util = require '../destoroyah/util'
 module.exports = class DestoroyahRunner
   constructor : (@files) ->
   _exposeGlobals : ->
@@ -23,14 +24,11 @@ module.exports = class DestoroyahRunner
     @files.forEach (file) ->  delete require.cache[file]
   run : ->
     @_exposeGlobals()
-    detach = []
-    detach.push destoroyah.bitterStruggle.on 'defeated', -> failed = true
-    detach.push destoroyah.bitterStruggle.on 'error rampage', -> failed = true
     tearDown = =>
       @_hideGlobals()
       destoroyah.bitterStruggle.surrender()
       @_unloadFiles()
-      detach.forEach (f) -> f()
+      return
     @_loadFiles()
     survivor()(destoroyah.bitterStruggle)
-    destoroyah.bitterStruggle.fight().then(tearDown, tearDown)
+    util.finally destoroyah.bitterStruggle.fight(), tearDown

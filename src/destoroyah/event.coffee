@@ -1,10 +1,16 @@
+Promise = require './promise'
+
 exports.MonsterEventEmitter = class MonsterEventEmitter
   constructor : ->
     @listeners = {}
     @_eventId = 0
   _fireEvent : (eventName, args...) ->
-    return unless eventName of @listeners
-    f.apply @, args for id, f of @listeners[eventName]
+    return Promise.resolve() unless eventName of @listeners
+    Promise.all(
+      for id, f of @listeners[eventName]
+        res = f.apply @, args
+        if res instanceof Promise then res else Promise.resolve res
+    )
   on : (eventName, f) ->
     @_eventId++
     @listeners[eventName] = {} unless eventName of @listeners
@@ -13,8 +19,10 @@ exports.MonsterEventEmitter = class MonsterEventEmitter
     => delete @listeners[eventName][eventId]
   once : (eventName, f) ->
     detach = @.on eventName, ->
-      f.apply @, arguments
+      res = f.apply @, arguments
       detach()
+      res
+    return
   through : (eventName, that, renamedTo, addition...) ->
     @on eventName, ->
       args = [@]
@@ -22,3 +30,4 @@ exports.MonsterEventEmitter = class MonsterEventEmitter
       args.unshift renamedTo || eventName
       args = args.concat addition if addition?
       that._fireEvent.apply that, args
+      return

@@ -45,9 +45,12 @@ class BitterStruggle extends MonsterEventEmitter
   #will return a Promise which is resolved with a boolean
   #indicating whether the run was successful
   fight : ->
+    end = => (res) => new Promise (resolveEnd, rejectEnd) => @_fireEvent('end').then((-> resolveEnd res), rejectEnd)
     @_setup()
-    @_fireEvent 'start'
-    util.finally @_runEachMonster(), => @_fireEvent 'end'
+    @_fireEvent('start')
+    .then => @_runEachMonster()
+    .then end()
+
   surrender : ->
     f() for f in @detach
     @detach = []

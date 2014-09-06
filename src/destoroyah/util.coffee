@@ -1,4 +1,5 @@
 require 'setimmediate'
+Promise = require './promise'
 
 exports.argFormat = (args) ->
   str = []
@@ -32,7 +33,11 @@ exports.either = (left, right) -> (useLeft) ->
 
 
 exports.finally = (promise, final) ->
-  promise.then final, final
+  promise
+  .then (r) -> final() || r
+  .catch (e) ->
+    final()
+    Promise.reject e
 
 exports.combo = (possibilities) ->
   acc = []

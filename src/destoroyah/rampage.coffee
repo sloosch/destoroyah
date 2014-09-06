@@ -3,6 +3,7 @@ attack = require('./attack').attacks
 testrun = require './testrun'
 setup = require './setup'
 util = require './util'
+Promise = require './promise'
 
 exports.Rampage = class Rampage extends MonsterEventEmitter
   @_lastId = 0
@@ -38,13 +39,12 @@ exports.Rampage = class Rampage extends MonsterEventEmitter
     attacksUsed = @_attackNames()
     setup.bindTo 'rampage', @
     test = testrun.forAll(@f, @_attacks(attacksUsed), @hope, @field, angryness)
-    .then (res) =>
+    .then (res) => new Promise (resolve, reject) =>
       @result = res
-      if res.failed
-        @_fireEvent 'defeated', res
-      else
-        @_fireEvent 'defended', res
-      res
+      (if res.failed then @_fireEvent 'defeated', res else @_fireEvent 'defended', res)
+      .then -> resolve res
+      .catch reject
+      return
     util.finally test, (res) ->
       setup.unbind 'rampage'
       res
