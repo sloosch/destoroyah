@@ -84,3 +84,4 @@ awake 'Attacks', ->
   rampage 'on a function returning arbitary Foos', (aFunctionReturningFoo) ->
     retVal = aFunctionReturningFoo()
     retVal == null or retVal instanceof Foo
+  rampage 'on a renamed attack', (fooInstance_bar) -> fooInstance_bar == null || fooInstance_bar instanceof Foo
