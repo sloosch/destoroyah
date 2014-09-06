@@ -144,3 +144,20 @@ wait for an asynchron event to happen via ES6 promises
       asyncStuff (result)-> resolve(result)
 
 `destoroyah.Promise` is either the native ES6 promise or a compatible polyfill
+
+also possible in the setup functions
+
+    stuff = null
+    whenAwake -> new destoroyah.Promise (resolve, reject) ->
+      requestStuff (result) ->
+        stuff = result
+        resolve()
+
+    whenCalm -> new destoroyah.Promise (resolve, reject) ->
+      cleanUpRemote resolve, reject
+
+    beforeRampage (rampage) -> new destoroyah.Promise (resolve, reject) ->
+      asynchronWriteStuff rampage, (res) -> if res then resolve() else reject()
+
+    afterRampage (rampage) -> new destoroyah.Promise (resolve, reject) ->
+      cleanUpStuff rampage, (res) -> resolve()
