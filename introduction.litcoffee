@@ -161,3 +161,25 @@ also possible in the setup functions
 
     afterRampage (rampage) -> new destoroyah.Promise (resolve, reject) ->
       cleanUpStuff rampage, (res) -> resolve()
+
+beside es6 promises, thenable frameworks like Q, P, bluebird etc. are supported
+
+    whenAwake -> destoroyah.thenable ->
+      defer = Q.defer()
+      asyncFoo -> defer.resolve()
+      defer.promise
+
+so we can for example quickcheck a whole page with **Destoroyah** and [Zombie](https://github.com/assaf/zombie)
+
+    Zombie = require 'zombie'
+
+    awake 'Zombies', ->
+
+      browser = null
+
+      whenAwake destoroyah.thenable ->
+        browser = new Zombie()
+        browser.visit('http://sloosch.github.io/destoroyah/')
+
+      rampage 'on my homepage', hoping.isEqual('Destoroyah'), ->
+        browser.text('header > h1')
