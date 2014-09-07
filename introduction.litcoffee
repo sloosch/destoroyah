@@ -164,7 +164,7 @@ also possible in the setup functions
 
 beside es6 promises, thenable frameworks like Q, P, bluebird etc. are supported
 
-    whenAwake -> destoroyah.thenable ->
+    whenAwake destoroyah.thenable ->
       defer = Q.defer()
       asyncFoo -> defer.resolve()
       defer.promise
