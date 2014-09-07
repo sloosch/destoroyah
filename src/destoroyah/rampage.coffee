@@ -24,8 +24,7 @@ exports.Rampage = class Rampage extends MonsterEventEmitter
     @explanation = null
     return
   _attackNames : ->
-    return [] unless fnParams = @f.toString().match(/^function\s*?\((.+)\)/)
-    attackNames = fnParams[1].split ','
+    attackNames = @f._destoroyahArgNames || util.fnArgNames @f
     attackNames.map (name) ->
       [attackName] = name.split '_'
       attackName.trim()

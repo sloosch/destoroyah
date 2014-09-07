@@ -5,33 +5,42 @@ awake 'Promise', 10, ->
 
   whenAwake -> new destoroyah.Promise (resolve, reject) ->
     setTimeout ->
-      console.log 'waited 1000ms when awake'
+      console.log 'waited 500ms when awake'
       resolve()
-    , 1000
+    , 500
 
   whenCalm -> new destoroyah.Promise (resolve, reject) ->
     setTimeout ->
-      console.log 'waited 1000ms when calm'
+      console.log 'waited 500ms when calm'
       resolve()
-    , 1000
+    , 500
 
   beforeRampage -> new destoroyah.Promise (resolve, reject) ->
     setTimeout ->
-      console.log 'waited 1000ms before rampage'
+      console.log 'waited 500ms before rampage'
       resolve()
-    , 1000
+    , 500
 
   afterRampage -> new destoroyah.Promise (resolve, reject) ->
     setTimeout ->
-      console.log 'waited 1000ms after rampage'
+      console.log 'waited 500ms after rampage'
       resolve()
-    , 1000
+    , 500
 
   rampage 'on timeout', (pInt) -> new destoroyah.Promise (resolve, reject) ->
     setTimeout (-> resolve(pInt >= 0)), 100
 
-  rampage 'on thenable frameworks like Q, P, bluebird etc.', destoroyah.thenable ->
+  rampage 'on thenable frameworks like Q, P, bluebird etc.', destoroyah.thenable (pInt) ->
     mockedThenable = {
       then : (resolve, reject) ->
-        setTimeout (-> resolve(true)), 1000
+        setTimeout (-> resolve(pInt >= 0)), 100
+    }
+
+  whenCalm destoroyah.thenable ->
+    mockedThenable = {
+      then : (resolve, reject) ->
+        setTimeout (->
+          console.log 'waited 500ms for a thenable when calm'
+          resolve()
+          ), 500
     }

@@ -39,7 +39,14 @@ exports.finally = (promise, final) ->
     final()
     Promise.reject e
 
-exports.thenable = (f) -> -> new Promise (resolve, reject) -> f().then(resolve, reject)
+exports.fnArgNames = fnArgNames = (f) ->
+  return [] unless fnParams = f.toString().match(/^function\s*?\((.+)\)/)
+  fnParams[1].split(',').map((e) -> e.trim())
+
+exports.thenable = (f) ->
+  p = (args...) -> new Promise (resolve, reject) -> f(args...).then(resolve, reject)
+  p._destoroyahArgNames = fnArgNames f #annotate the function for attack injections
+  p
 
 exports.combo = (possibilities) ->
   acc = []
