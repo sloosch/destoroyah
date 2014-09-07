@@ -29,3 +29,9 @@ awake 'Promise', 10, ->
 
   rampage 'on timeout', (pInt) -> new destoroyah.Promise (resolve, reject) ->
     setTimeout (-> resolve(pInt >= 0)), 100
+
+  rampage 'on thenable frameworks like Q, P, bluebird etc.', destoroyah.thenable ->
+    mockedThenable = {
+      then : (resolve, reject) ->
+        setTimeout (-> resolve(true)), 1000
+    }

@@ -16,6 +16,7 @@ module.exports = destoroyah =
   hoping : hoping
   constants : constants
   Promise : Promise
+  thenable : util.thenable
   bitterStruggle : bitterStruggle
   modules :
     field : fieldModule

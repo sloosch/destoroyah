@@ -39,6 +39,8 @@ exports.finally = (promise, final) ->
     final()
     Promise.reject e
 
+exports.thenable = (f) -> -> new Promise (resolve, reject) -> f().then(resolve, reject)
+
 exports.combo = (possibilities) ->
   acc = []
   return acc if possibilities.length == 0
