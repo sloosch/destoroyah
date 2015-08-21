@@ -76,9 +76,9 @@ if (program.watch != null) {
       if (!waiting) {
         waiting = true;
         return util["finally"](lastRun, function() {
-          var ev, _i, _len;
-          for (_i = 0, _len = runQueue.length; _i < _len; _i++) {
-            ev = runQueue[_i];
+          var ev, i, len;
+          for (i = 0, len = runQueue.length; i < len; i++) {
+            ev = runQueue[i];
             console.log(ev.event + ' ' + ev.filepath);
             delete require.cache[ev.filepath];
           }

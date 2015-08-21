@@ -9,10 +9,10 @@ exports.DestoroyahResult = class DestoroyahResult
 exports.TestRun = class TestRun
   constructor : (@func, @thisAttacks, @hope, @field, @angryness) ->
     @lastArguments = []
-    if thisAttacks.length > 0
-      @edgeCases = thisAttacks.map (att) -> att.edgeCases().concat [att.execute field]
+    if @thisAttacks.length > 0
+      @edgeCases = @thisAttacks.map (att) => att.edgeCases().concat [att.execute @field]
       @combos = util.combo @edgeCases
-      @allCases = thisAttacks.map (e) -> e.cases()
+      @allCases = @thisAttacks.map (e) -> e.cases()
       @complexity = if @allCases.length > 0 then @allCases.reduce ((acc, e) -> if !e then Infinity else acc * e.length), 1 else 0
     else
       @edgeCases = []

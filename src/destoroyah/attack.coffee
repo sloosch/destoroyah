@@ -23,7 +23,7 @@ exports.resolveAttack = resolveAttack = (attackName) ->
   attack
 
 exports.Attack = class Attack
-  constructor : (@args...) -> @_init args...
+  constructor : (@args...) -> @_init @args...
   execute : (dist) ->
     @_prepare()
     args = (arg for arg in @args)

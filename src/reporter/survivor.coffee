@@ -26,6 +26,7 @@ module.exports = survivor = -> (bitterStruggle) ->
   detach.push bitterStruggle.on 'error rampage', (monster, rampage, error) ->
     msg = 'Found a weak spot, fight ended unfair "' + chalk.bold(rampage.reason) + '" with error ' + error
     msg += '\nfought with arguments ' + util.argFormat(error.__destoroyah) if error.__destoroyah?
+    msg += '\n' + error.stack if error.stack?
     console.log '  ' + chalk.red(logSymbols.error + ' ' + msg)
 
   detach.push bitterStruggle.on 'end', ->
